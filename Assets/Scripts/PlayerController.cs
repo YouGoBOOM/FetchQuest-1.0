@@ -6,6 +6,8 @@ public class PlayerController : MonoBehaviour {
 
     // Initializing Variables
     public float moveSpeed = 4;     // Walking Movement Speed
+    public bool rightMouseClicked = false;
+    public Vector3 mouseWorldSpace;
     private Animator animator;      // Animator
     
     // Use this for initialization
@@ -16,22 +18,25 @@ public class PlayerController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
-        // Horizontal 
-        if (Input.GetAxisRaw("Horizontal") > 0 || Input.GetAxisRaw("Horizontal") < 0) {
-            // Horizontal Movement
-            transform.Translate(new Vector3(Input.GetAxisRaw("Horizontal") * moveSpeed * Time.deltaTime, 0f, 0f));
+
+        // Right click movement
+        OnMouseRightClick();
+        if (rightMouseClicked == true && transform.position != mouseWorldSpace) {
+            transform.position = Vector3.MoveTowards(transform.position, mouseWorldSpace, moveSpeed * Time.deltaTime);
+        } else if (transform.position == mouseWorldSpace) {
+            rightMouseClicked = false;
         }
 
-        // Vertical
-        if (Input.GetAxisRaw("Vertical") > 0 || Input.GetAxisRaw("Vertical") < 0) {
-            // Vertical Movement
-            transform.Translate(new Vector3(0f, Input.GetAxisRaw("Vertical") * moveSpeed * Time.deltaTime, 0f));
+    }
+
+    // Right click screen to world positioning
+    private void OnMouseRightClick() {
+        if (Input.GetMouseButtonDown(1)) {
+            rightMouseClicked = true;
+            Vector3 mouseScreenPosition = Input.mousePosition;
+            mouseWorldSpace = Camera.main.ScreenToWorldPoint(mouseScreenPosition);
+            mouseWorldSpace.z = 0;
         }
-
-        // Animator
-        animator.SetFloat("MoveX", Input.GetAxisRaw("Horizontal"));
-        animator.SetFloat("MoveY", Input.GetAxisRaw("Vertical"));
-
+        
     }
 }
