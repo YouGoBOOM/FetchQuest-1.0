@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FetchQuest 1.0", "Assembly-CSharp.csproj", "{A0AAB3C9-4E83-C047-43D3-F2B5BB011A30}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FetchQuest 1.0", "Assembly-CSharp-Editor.csproj", "{B6775BCD-8220-07F0-176C-4DA8772D51D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,10 @@ Global
 		{A0AAB3C9-4E83-C047-43D3-F2B5BB011A30}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0AAB3C9-4E83-C047-43D3-F2B5BB011A30}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A0AAB3C9-4E83-C047-43D3-F2B5BB011A30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6775BCD-8220-07F0-176C-4DA8772D51D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6775BCD-8220-07F0-176C-4DA8772D51D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6775BCD-8220-07F0-176C-4DA8772D51D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6775BCD-8220-07F0-176C-4DA8772D51D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
