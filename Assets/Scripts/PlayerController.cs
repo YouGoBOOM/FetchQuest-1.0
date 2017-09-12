@@ -9,30 +9,39 @@ public class PlayerController : MonoBehaviour {
     public bool rightMouseClicked = false;   // Check if right mouse was clicked
     public Vector3 mouseWorldSpace;          // Make target for right click global
     private Animator animator;               // Animator
+    private Rigidbody2D playerRigidbody;     // Rigidbody
+    private Collider2D playerCollider;       // Collider for player
+    private PolygonCollider2D solidCollider; // Collider for solid layer
     public bool playerMoving = false;        // Check if player is moving
     public float direction;                  // Current direction
     public float lastDirection;              // Last direction when idle
+    public Vector3 lastLocation;             // Last location
     
     // Use this for initialization
 	void Start () {
-        // Getting Animator
-        animator = GetComponent<Animator>();
-	}
+        animator = GetComponent<Animator>();                // Getting Animator
+        playerRigidbody = GetComponent<Rigidbody2D>();      // Getting Rigidbody 2D
+        playerCollider = GetComponent<Collider2D>();        // Getting Collider
+        solidCollider = GameObject.FindGameObjectWithTag("Solid").GetComponent<PolygonCollider2D>();
+    }
 	
 	// Update is called once per frame
 	void Update () {
 
         // Right click movement
         OnMouseRightClick();
-        if (rightMouseClicked == true && transform.position != mouseWorldSpace) {
-            // Move until at target
-            direction = CalculateDirection(mouseWorldSpace.x, mouseWorldSpace.y, transform.position.x, transform.position.y);
-            transform.position = Vector3.MoveTowards(transform.position, mouseWorldSpace, moveSpeed * Time.deltaTime);
-        } else if (transform.position == mouseWorldSpace) {
-            // When at target, stop moving
+        if (transform.position == mouseWorldSpace || playerCollider.IsTouching(solidCollider)) {
+            // When at target or at something solid, stop moving
             lastDirection = direction;
             rightMouseClicked = false;
             playerMoving = false;
+            if (playerCollider.IsTouching(solidCollider)) {
+                transform.position = Vector3.MoveTowards(transform.position, lastLocation, moveSpeed * Time.deltaTime);
+            }
+        } else if (rightMouseClicked == true && transform.position != mouseWorldSpace) {
+            // Move until at target
+            direction = CalculateDirection(mouseWorldSpace.x, mouseWorldSpace.y, transform.position.x, transform.position.y);
+            transform.position = Vector3.MoveTowards(transform.position, mouseWorldSpace, moveSpeed * Time.deltaTime);
         }
 
         // Set parameters in animator
@@ -49,11 +58,12 @@ public class PlayerController : MonoBehaviour {
             Vector3 mouseScreenPosition = Input.mousePosition;
             mouseWorldSpace = Camera.main.ScreenToWorldPoint(mouseScreenPosition);
             mouseWorldSpace.z = 0;
+            lastLocation = transform.position;
         }
     }
 
     // Calculates direction of movement
-    // Returns direction at int
+    // Returns direction as float
     // 0 = right, 1 = up-right, 2 = up, 3 = up-left, 4 = left, 5 = down-left, 6 = down, 7 = down-right
     private float CalculateDirection(float targetLocationX, float targetLocationY, float currentLocationX, float currentLocationY) {
         float angle;
