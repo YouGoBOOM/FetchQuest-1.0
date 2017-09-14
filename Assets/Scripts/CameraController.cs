@@ -4,14 +4,21 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour {
 
-    public GameObject followTarget;
-    private Vector3 targetPosition;
-    public float moveSpeed = 4;
+    public GameObject followTarget;             // Target to follow
+    private Vector3 targetPosition;             // Position of target
+    public float moveSpeed = 4;                 // Speed of camera
+    public static bool cameraExists = false;    // Determines if the camera already exists
 
-	// Use this for initialization
-	void Start () {
-        
-	}
+    // Use this for initialization
+    void Start () {
+        // Check between levels if player exists
+        if (!cameraExists) {
+            cameraExists = true;
+            DontDestroyOnLoad(transform.gameObject);
+        } else {
+            Destroy(gameObject);
+        }
+    }
 	
 	// Update is called once per frame
 	void Update () {

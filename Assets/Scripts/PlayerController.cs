@@ -11,18 +11,27 @@ public class PlayerController : MonoBehaviour {
     private Animator animator;               // Animator
     private Rigidbody2D playerRigidbody;     // Rigidbody
     private Collider2D playerCollider;       // Collider for player
-    private PolygonCollider2D solidCollider; // Collider for solid layer
+    public PolygonCollider2D solidCollider; // Collider for solid layer
     public bool playerMoving = false;        // Check if player is moving
     public float direction;                  // Current direction
     public float lastDirection;              // Last direction when idle
     public Vector3 lastLocation;             // Last location
+    public static bool playerExists = false; // Determines if the player already exists
     
     // Use this for initialization
 	void Start () {
+        // Check between levels if player exists
+        if (!playerExists) {
+            playerExists = true;
+            DontDestroyOnLoad(transform.gameObject);
+        } else {
+            Destroy(gameObject);
+        }
+
         animator = GetComponent<Animator>();                // Getting Animator
         playerRigidbody = GetComponent<Rigidbody2D>();      // Getting Rigidbody 2D
-        playerCollider = GetComponent<Collider2D>();        // Getting Collider
-        solidCollider = GameObject.FindGameObjectWithTag("Solid").GetComponent<PolygonCollider2D>();
+        playerCollider = GetComponent<Collider2D>();        // Getting player Collider 2D
+        
     }
 	
 	// Update is called once per frame
@@ -35,6 +44,7 @@ public class PlayerController : MonoBehaviour {
             lastDirection = direction;
             rightMouseClicked = false;
             playerMoving = false;
+            // Collision check
             if (playerCollider.IsTouching(solidCollider)) {
                 transform.position = Vector3.MoveTowards(transform.position, lastLocation, moveSpeed * Time.deltaTime);
             }
