@@ -15,8 +15,9 @@ public class PlayerStartPoint : MonoBehaviour {
         thePlayer.transform.position = transform.position;
         thePlayer.mouseWorldSpace = transform.position;
         thePlayer.direction = startDirection;
-        // Getting solid layer collider for player
+        // Getting solid layer colliders
         thePlayer.solidCollider = GameObject.FindGameObjectWithTag("Solid").GetComponent<PolygonCollider2D>();
+        
         // Set start position of camera
         theCamera = FindObjectOfType<CameraController>();
         theCamera.transform.position = new Vector3(transform.position.x, transform.position.y, theCamera.transform.position.z);

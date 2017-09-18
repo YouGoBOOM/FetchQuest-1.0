@@ -18,7 +18,7 @@ public class Exit : MonoBehaviour {
 	}
 
     // EDIT THIS FUNCTION OR REMOVE COMPLETELY IN FUTURE
-    // DO SOMETHING IN UPDATE SO THAT PLAYER MOVES INTO MIDDLE OF EXIT SPACE BEFORE LOADING
+    // DO SOMETHING IN UPDATE SO THAT PLAYER MOVES INTO MIDDLE OF EXIT SPACE BEFORE LOADINGs
     // When player enters exit space, load specific scene
     void OnTriggerEnter2D(Collider2D other) {
         if (other.gameObject.name == "Player") {

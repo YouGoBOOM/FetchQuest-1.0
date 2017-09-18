@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour {
     private Animator animator;               // Animator
     private Rigidbody2D playerRigidbody;     // Rigidbody
     private Collider2D playerCollider;       // Collider for player
-    public PolygonCollider2D solidCollider; // Collider for solid layer
+    public PolygonCollider2D solidCollider;  // Collider for solid layer
     public bool playerMoving = false;        // Check if player is moving
     public float direction;                  // Current direction
     public float lastDirection;              // Last direction when idle
@@ -27,11 +27,10 @@ public class PlayerController : MonoBehaviour {
         } else {
             Destroy(gameObject);
         }
-
+        
         animator = GetComponent<Animator>();                // Getting Animator
         playerRigidbody = GetComponent<Rigidbody2D>();      // Getting Rigidbody 2D
         playerCollider = GetComponent<Collider2D>();        // Getting player Collider 2D
-        
     }
 	
 	// Update is called once per frame
