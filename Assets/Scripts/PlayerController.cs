@@ -16,10 +16,14 @@ public class PlayerController : MonoBehaviour {
     public float direction;                  // Current direction
     public float lastDirection;              // Last direction when idle
     public Vector3 lastLocation;             // Last location
+    public bool attacking = false;           // Check if player is attacking
+    public float attackTimer;                // Attack timer of player
+    public float attackTimerCounter;         // Counter for the attack timer
     public static bool playerExists = false; // Determines if the player already exists
-    
+    private MouseController theCursor;       // Getting the mouse
+
     // Use this for initialization
-	void Start () {
+    void Start () {
         // Check between levels if player exists
         if (!playerExists) {
             playerExists = true;
@@ -31,13 +35,14 @@ public class PlayerController : MonoBehaviour {
         animator = GetComponent<Animator>();                // Getting Animator
         playerRigidbody = GetComponent<Rigidbody2D>();      // Getting Rigidbody 2D
         playerCollider = GetComponent<Collider2D>();        // Getting player Collider 2D
+        theCursor = FindObjectOfType<MouseController>();    // Getting the mouse
     }
 	
 	// Update is called once per frame
 	void Update () {
 
         // Right click movement
-        OnMouseRightClick();
+        theCursor.OnMouseRightClick();
         if (transform.position == mouseWorldSpace || playerCollider.IsTouching(solidCollider)) {
             // When at target or at something solid, stop moving
             lastDirection = direction;
@@ -57,18 +62,7 @@ public class PlayerController : MonoBehaviour {
         animator.SetFloat("CurrentDirection", direction);
         animator.SetFloat("LastDirection", lastDirection);
         animator.SetBool("PlayerMoving", playerMoving);
-    }
-
-    // Right click screen to world positioning
-    private void OnMouseRightClick() {
-        if (Input.GetMouseButtonDown(1)) {
-            rightMouseClicked = true;
-            playerMoving = true;
-            Vector3 mouseScreenPosition = Input.mousePosition;
-            mouseWorldSpace = Camera.main.ScreenToWorldPoint(mouseScreenPosition);
-            mouseWorldSpace.z = 0;
-            lastLocation = transform.position;
-        }
+        animator.SetBool("PlayerAttacking", attacking);
     }
 
     // Calculates direction of movement
