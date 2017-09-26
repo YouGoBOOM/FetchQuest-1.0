@@ -6,14 +6,12 @@ using UnityEngine.SceneManagement;
 public class Exit : MonoBehaviour {
 
     public string levelToLoad;              // Goes to level
-    private MouseController theMouse;       // Getting the mouse controller
     private GameObject exitHover;           // Getting the exitHover
 
     // Use this for initialization
     void Start () {
         exitHover = transform.GetChild(0).gameObject;               // Getting the exit hover
         exitHover.SetActive(false);                                 // Disable the exit hover
-        theMouse = FindObjectOfType<MouseController>();             // Getting the mouse
 
     }
 	

@@ -6,7 +6,6 @@ using UnityEngine.SceneManagement;
 public class SlimeController : MonoBehaviour {
     
     public float moveSpeed;                          // Slime speed
-    private Rigidbody2D slimeRigidbody;              // Getting rigidbody of slime
     private CircleCollider2D slimeCollider;          // Collider for the slime
     private PolygonCollider2D solidCollider;         // Collider for solid layer
     private bool moving = false;                     // Check if slime is moving
@@ -16,27 +15,30 @@ public class SlimeController : MonoBehaviour {
     private float timeToMoveCounter;                 // Counts down the time taken to move
     private Vector3 direction;                       // Direction of movement
     public float deathTimer;                         // Time taken to respawn
-    private bool reloading;                          // Checks to see if the player is respawning
-    private GameObject player;                       // Gets the player
-    private GameObject crosshairs;                   // Getting the crosshairs
-    private MouseController theMouse;                // Getting the mouse controller
+    // private GameObject thePlayer;                    // Gets the player
+    public GameObject crosshairs;                    // Getting the crosshairs
+    public bool targetted = false;                   // Check if targetted
 
     // Use this for initialization
     void Start () {
-        slimeRigidbody = GetComponent<Rigidbody2D>();           // Getting Rigidbody 2D
-        slimeCollider = GetComponent<CircleCollider2D>();       // Getting slime Circle Collider 2D
+        slimeCollider = GetComponent<CircleCollider2D>();            // Getting slime Circle Collider 2D
         // Getting solid layers collider
         solidCollider = GameObject.FindGameObjectWithTag("Solid").GetComponent<PolygonCollider2D>();
         randomTimeCounters(-1);
         crosshairs = transform.GetChild(0).gameObject;               // Getting the exit hover
         crosshairs.SetActive(false);                                 // Disable the exit hover
-        theMouse = FindObjectOfType<MouseController>();     // Getting the mouse
+        // thePlayer = GameObject.FindGameObjectWithTag("Player");      // Getting the player
     }
 	
 	// Update is called once per frame
 	void Update () {
         Moving();
-	}
+    }
+
+    // When destroyed, untarget itself
+    void OnDestroy () {
+        targetted = false;
+    }
 
     // Function that allows slime to move
     private void Moving() {
@@ -71,13 +73,16 @@ public class SlimeController : MonoBehaviour {
             }
         }
         // Check if the player died
-        if(reloading) {
+        // Need this code snippet for later maybe
+        /*
+        if (reloading) {
             deathTimer -= Time.deltaTime;
             if(deathTimer < 0) {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-                player.gameObject.SetActive(true);
+                thePlayer.gameObject.SetActive(true);
             }
         }
+        */
     }
 
     // FIX THIS SO IT'S NICER LATER
@@ -90,22 +95,6 @@ public class SlimeController : MonoBehaviour {
         } else {
             timeBetweenMoveCounter = Random.Range(timeBetweenMove * 0.75f, timeBetweenMove * 1.25f);
             timeToMoveCounter = Random.Range(timeToMove * 0.75f, timeToMove * 1.25f);
-        }
-    }
-    
-    private void OnCollisionEnter2D(Collision2D coll) {
-        // When mouse hovers over slime, activate crosshairs
-        if (coll.gameObject.name == "Cursor") {
-            crosshairs.SetActive(true);
-            theMouse.attacking = true;
-        }
-    }
-
-    private void OnCollisionExit2D(Collision2D coll) {
-        // Disable crosshairs when cursor goes off
-        if (coll.gameObject.name == "Cursor") {
-            crosshairs.SetActive(false);
-            theMouse.attacking = false;
         }
     }
 }

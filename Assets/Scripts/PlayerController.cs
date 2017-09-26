@@ -4,12 +4,11 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
 
-    // Initializing Variables
+    // Declaring Variables
     public float moveSpeed = 4f;             // Walking Movement Speed
     public bool rightMouseClicked = false;   // Check if right mouse was clicked
     public Vector3 mouseWorldSpace;          // Make target for right click global
     private Animator animator;               // Animator
-    private Rigidbody2D playerRigidbody;     // Rigidbody
     private Collider2D playerCollider;       // Collider for player
     public PolygonCollider2D solidCollider;  // Collider for solid layer
     public bool playerMoving = false;        // Check if player is moving
@@ -33,7 +32,6 @@ public class PlayerController : MonoBehaviour {
         }
         
         animator = GetComponent<Animator>();                // Getting Animator
-        playerRigidbody = GetComponent<Rigidbody2D>();      // Getting Rigidbody 2D
         playerCollider = GetComponent<Collider2D>();        // Getting player Collider 2D
         theCursor = FindObjectOfType<MouseController>();    // Getting the mouse
     }
@@ -43,19 +41,16 @@ public class PlayerController : MonoBehaviour {
 
         // Right click movement
         theCursor.OnMouseRightClick();
+        if (theCursor.targetting) {
+            // If player targetted enemy, walk towards enemy
+            mouseWorldSpace = theCursor.targettedEnemy.transform.position;
+        }
         if (transform.position == mouseWorldSpace || playerCollider.IsTouching(solidCollider)) {
-            // When at target or at something solid, stop moving
-            lastDirection = direction;
-            rightMouseClicked = false;
-            playerMoving = false;
-            // Collision check
-            if (playerCollider.IsTouching(solidCollider)) {
-                transform.position = Vector3.MoveTowards(transform.position, lastLocation, moveSpeed * Time.deltaTime);
-            }
+            // Stop moving if at target or touching solid
+            StopMoving();
         } else if (rightMouseClicked == true && transform.position != mouseWorldSpace) {
             // Move until at target
-            direction = CalculateDirection(mouseWorldSpace.x, mouseWorldSpace.y, transform.position.x, transform.position.y);
-            transform.position = Vector3.MoveTowards(transform.position, mouseWorldSpace, moveSpeed * Time.deltaTime);
+            MovingToTarget(mouseWorldSpace);
         }
 
         // Set parameters in animator
@@ -99,6 +94,24 @@ public class PlayerController : MonoBehaviour {
             return 0f;
         } else {
             return direction;
+        }
+    }
+
+    // Move player to target
+    private void MovingToTarget(Vector3 target) {
+        direction = CalculateDirection(target.x, target.y, transform.position.x, transform.position.y);
+        transform.position = Vector3.MoveTowards(transform.position, target, moveSpeed * Time.deltaTime);
+    }
+
+    // Stop moving
+    private void StopMoving() {
+        lastDirection = direction;
+        rightMouseClicked = false;
+        playerMoving = false;
+        // Collision check
+        if (playerCollider.IsTouching(solidCollider))
+        {
+            transform.position = Vector3.MoveTowards(transform.position, lastLocation, moveSpeed * Time.deltaTime);
         }
     }
 }

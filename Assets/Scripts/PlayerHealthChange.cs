@@ -17,11 +17,10 @@ public class PlayerHealthChange : MonoBehaviour {
 		
 	}
 
-    // Checks if the player collided with the slime
+    // Checks if the player collided with the something that changes player's health
     void OnCollisionEnter2D(Collision2D other) {
         if (other.gameObject.name == "Player") {
             other.gameObject.GetComponent<PlayerHealthManager>().setCurrentHeatlh(value, relative);
-
         }
     }
 }
