@@ -20,6 +20,9 @@ public class PlayerController : MonoBehaviour {
     public float attackTimerCounter;         // Counter for the attack timer
     public static bool playerExists = false; // Determines if the player already exists
     private MouseController theCursor;       // Getting the mouse
+    public float distanceFromEnemy;          // Distance from target enemy
+    public float attackRange;                // Distance from target enemy
+    public float playerDamage;               // Amount of damage the player deals
 
     // Use this for initialization
     void Start () {
@@ -38,12 +41,23 @@ public class PlayerController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
         // Right click movement
         theCursor.OnMouseRightClick();
+        // Check if an enemy is targetted
         if (theCursor.targetting) {
-            // If player targetted enemy, walk towards enemy
-            mouseWorldSpace = theCursor.targettedEnemy.transform.position;
+            // Get the distance from the targetted enemy
+            distanceFromEnemy = (transform.position - theCursor.targettedEnemy.transform.position).magnitude;
+            if (distanceFromEnemy > attackRange) {
+                // If player targetted enemy, walk towards enemy until at attack range
+                mouseWorldSpace = theCursor.targettedEnemy.transform.position;
+            } else {
+                // Attack enemy when within range
+                lastDirection = direction;
+                playerMoving = false;
+                AttackEnemy(theCursor.targettedEnemy);
+                mouseWorldSpace = transform.position;
+                direction = CalculateDirection(theCursor.targettedEnemy.transform.position.x, theCursor.targettedEnemy.transform.position.y, transform.position.x, transform.position.y);
+            }
         }
         if (transform.position == mouseWorldSpace || playerCollider.IsTouching(solidCollider)) {
             // Stop moving if at target or touching solid
@@ -59,6 +73,8 @@ public class PlayerController : MonoBehaviour {
         animator.SetBool("PlayerMoving", playerMoving);
         animator.SetBool("PlayerAttacking", attacking);
     }
+
+    
 
     // Calculates direction of movement
     // Returns direction as float
@@ -113,5 +129,29 @@ public class PlayerController : MonoBehaviour {
         {
             transform.position = Vector3.MoveTowards(transform.position, lastLocation, moveSpeed * Time.deltaTime);
         }
+    }
+
+    // Attack an enemy
+    private void AttackEnemy(GameObject enemy) {
+        // 3 stages to attack, first half windup, instance of damage, second half cooldown
+        bool attackCooldown = false;
+        attackTimerCounter = attackTimer;
+        // Check if one of the 2 halves is over
+        if (attackTimerCounter <= 0) {
+            // Set the counter back to the max
+            attackTimerCounter = attackTimer;
+            // If attack is not on cooldown after one half
+            if (attackCooldown) {
+                // Deal damage
+                enemy.GetComponent<SlimeController>().SetEnemyHealth(-playerDamage, true);
+                // Set the cooldown to true
+                attackCooldown = true;
+            } else {
+                // Set the cooldown to false
+                attackCooldown = false;
+            }
+        }
+        // Countdown time
+        attackTimerCounter -= Time.deltaTime;
     }
 }
