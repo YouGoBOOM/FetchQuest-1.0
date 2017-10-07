@@ -10,14 +10,14 @@ public class SlimeController : EnemyController {
     private PolygonCollider2D solidCollider;         // Collider for solid layer
     private bool moving = false;                     // Check if slime is moving
     public float timeBetweenMove;                    // Time in between random movements
-    public float timeBetweenMoveCounter;            // Counts down the time in between random movements
+    public float timeBetweenMoveCounter;             // Counts down the time in between random movements
     public float timeToMove;                         // Time taken to move
-    public float timeToMoveCounter;                 // Counts down the time taken to move
+    public float timeToMoveCounter;                  // Counts down the time taken to move
     private Vector3 direction;                       // Direction of movement
     public float deathTimer;                         // Time taken to respawn
-    // private GameObject thePlayer;                    // Gets the player
+    
     public GameObject crosshairs;                    // Getting the crosshairs
-    public bool targetted = false;                   // Check if targetted
+    // public bool targetted = false;                   // Check if targetted
     public bool attacking = false;                   // Check if the slime is attacking
 
     // Use this for initialization
@@ -27,20 +27,25 @@ public class SlimeController : EnemyController {
         solidCollider = GameObject.FindGameObjectWithTag("Solid").GetComponent<PolygonCollider2D>();
         timeBetweenMoveCounter = Random.Range(timeBetweenMove * 0.75f, timeBetweenMove * 1.25f);
         timeToMoveCounter = Random.Range(timeToMove * 0.75f, timeToMove * 1.25f);
-        crosshairs = transform.GetChild(0).gameObject;               // Getting the exit hover
-        crosshairs.SetActive(false);                                 // Disable the exit hover
-        // thePlayer = GameObject.FindGameObjectWithTag("Player");      // Getting the player
+        crosshairs = transform.GetChild(0).gameObject;               // Crosshairs
+        crosshairs.SetActive(false);                                 // Disable the crosshairs
+        // Getting the player
+        thePlayer = GameObject.FindGameObjectWithTag("Player");
+        theMouse = FindObjectOfType<MouseController>().gameObject;
     }
 	
 	// Update is called once per frame
 	void Update () {
         Moving();
-        CheckDead();
     }
 
     // When destroyed, untarget itself
     void OnDestroy () {
+        thePlayer.GetComponent<PlayerController>().engaging = false;
         targetted = false;
+        theMouse.GetComponent<MouseController>().targettedEnemy = null;
+        theMouse.GetComponent<MouseController>().targetting = false;
+        thePlayer.GetComponent<PlayerController>().enemyDied = true;
     }
 
     // Function that allows slime to move
@@ -76,6 +81,8 @@ public class SlimeController : EnemyController {
                     direction = new Vector3(Random.Range(-1f, 1f) * moveSpeed + transform.position.x, Random.Range(-1f, 1f) * moveSpeed + transform.position.y, transform.position.z);
                 }
             }
+        } else {
+
         }
         // Check if the player died
         // Need this code snippet for later maybe
@@ -88,13 +95,5 @@ public class SlimeController : EnemyController {
             }
         }
         */
-    }
-    
-    public override void SetEnemyHealth(float healthChange, bool relative) {
-        base.SetEnemyHealth(healthChange, relative);
-    }
-
-    public override void CheckDead() {
-        base.CheckDead();
     }
 }

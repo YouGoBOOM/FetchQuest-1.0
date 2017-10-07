@@ -10,6 +10,7 @@ public class MouseController : MonoBehaviour {
     public bool attacking = false;                  // Check if the player is attacking
     public bool selecting = false;                  // Check if the player is selecting
     public GameObject targettedEnemy = null;        // Set current targetted enemy
+    public GameObject targettingEnemy = null;       // Set the hovered over enemy
     public bool targetting = false;                 // Check if the player is targetting an enemy
     public static bool cursorExists = false;        // Check if mouse exists
 
@@ -36,10 +37,15 @@ public class MouseController : MonoBehaviour {
 	void Update () {
         // Make the cursor follow the real mouse
         transform.position = mouseScreenPositioning(transform.position);
+        // Set mouse selecting animation when right click is down
+        if (Input.GetMouseButton(1)) {
+            selecting = true;
+        } else {
+            selecting = false;
+        }
         // Set parameters in animator
         myAnimator.SetBool("Selecting", selecting);
         myAnimator.SetBool("Attacking", attacking);
-
     }
 
     // Right click
@@ -48,14 +54,16 @@ public class MouseController : MonoBehaviour {
             thePlayer.rightMouseClicked = true;
             thePlayer.playerMoving = true;
             // If there is a target enemy
-            if (targettedEnemy != null) {
+            if (targettingEnemy != null) {
                 // If clicked on the enemy, mouseWorldSpace becomes enemy location
-                if (myCollider.IsTouching(targettedEnemy.GetComponent<CircleCollider2D>())) {
+                if (myCollider.IsTouching(targettingEnemy.GetComponent<CircleCollider2D>())) {
                     targetting = true;
+                    targettedEnemy = targettingEnemy;
                     targettedEnemy.GetComponent<SlimeController>().targetted = true;
-                } else {
-                    targetting = false;
                 }
+            } else {
+                targetting = false;
+                targettedEnemy = null;
             }
             // Otherwise, mouseWorldSpace becomes location clicked on
             thePlayer.mouseWorldSpace = mouseScreenPositioning(thePlayer.mouseWorldSpace);
@@ -76,7 +84,7 @@ public class MouseController : MonoBehaviour {
         if (coll.gameObject.tag == "Enemy") {
             coll.gameObject.GetComponent<SlimeController>().crosshairs.SetActive(true);
             attacking = true;
-            targettedEnemy = coll.gameObject;
+            targettingEnemy = coll.gameObject;
         }
     }
 
@@ -85,6 +93,7 @@ public class MouseController : MonoBehaviour {
         if (coll.gameObject.tag == "Enemy") {
             coll.gameObject.GetComponent<SlimeController>().crosshairs.SetActive(false);
             attacking = false;
+            targettingEnemy = null;
         }
     }
 }

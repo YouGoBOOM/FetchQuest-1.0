@@ -18,12 +18,16 @@ public class PlayerController : MonoBehaviour {
     public bool attacking = false;           // Check if player is attacking
     public float attackTimer;                // Attack timer of player
     public float attackTimerCounter;         // Counter for the attack timer
+    public bool attackCooldown = false;      // Sets the attack cooldown
     public static bool playerExists = false; // Determines if the player already exists
     private MouseController theCursor;       // Getting the mouse
     public float distanceFromEnemy;          // Distance from target enemy
     public float attackRange;                // Distance from target enemy
     public float playerDamage;               // Amount of damage the player deals
-
+    public bool engaging = false;            // Check if player is engaging
+    public bool enemyDied = false;           // Check if the enemy died
+    public bool firstChecker = false;        // Check if this is the first time this is called
+    
     // Use this for initialization
     void Start () {
         // Check between levels if player exists
@@ -50,6 +54,8 @@ public class PlayerController : MonoBehaviour {
             if (distanceFromEnemy > attackRange) {
                 // If player targetted enemy, walk towards enemy until at attack range
                 mouseWorldSpace = theCursor.targettedEnemy.transform.position;
+                playerMoving = true;
+                engaging = false;
             } else {
                 // Attack enemy when within range
                 lastDirection = direction;
@@ -58,14 +64,17 @@ public class PlayerController : MonoBehaviour {
                 mouseWorldSpace = transform.position;
                 direction = CalculateDirection(theCursor.targettedEnemy.transform.position.x, theCursor.targettedEnemy.transform.position.y, transform.position.x, transform.position.y);
             }
-        }
+        } 
         if (transform.position == mouseWorldSpace || playerCollider.IsTouching(solidCollider)) {
             // Stop moving if at target or touching solid
-            StopMoving();
+            if (!engaging) {
+                StopMoving();
+            }
         } else if (rightMouseClicked == true && transform.position != mouseWorldSpace) {
             // Move until at target
             MovingToTarget(mouseWorldSpace);
         }
+        ResetAttackAnimationOnEnemyDeath();
 
         // Set parameters in animator
         animator.SetFloat("CurrentDirection", direction);
@@ -73,9 +82,7 @@ public class PlayerController : MonoBehaviour {
         animator.SetBool("PlayerMoving", playerMoving);
         animator.SetBool("PlayerAttacking", attacking);
     }
-
     
-
     // Calculates direction of movement
     // Returns direction as float
     // 0 = right, 1 = up-right, 2 = up, 3 = up-left, 4 = left, 5 = down-left, 6 = down, 7 = down-right
@@ -132,26 +139,61 @@ public class PlayerController : MonoBehaviour {
     }
 
     // Attack an enemy
-    private void AttackEnemy(GameObject enemy) {
+    private void AttackEnemy(GameObject enemy)
+    {
         // 3 stages to attack, first half windup, instance of damage, second half cooldown
-        bool attackCooldown = false;
-        attackTimerCounter = attackTimer;
+        if (!engaging)
+        {
+            attackTimerCounter = attackTimer;
+            engaging = true;
+            attackCooldown = false;
+            attacking = false;
+        }
         // Check if one of the 2 halves is over
-        if (attackTimerCounter <= 0) {
+        if (attackTimerCounter <= 0)
+        {
             // Set the counter back to the max
             attackTimerCounter = attackTimer;
             // If attack is not on cooldown after one half
-            if (attackCooldown) {
+            if (!attackCooldown)
+            {
                 // Deal damage
-                enemy.GetComponent<SlimeController>().SetEnemyHealth(-playerDamage, true);
+                enemy.GetComponent<EnemyHealthChange>().SetEnemyHealth(-playerDamage, true);
                 // Set the cooldown to true
                 attackCooldown = true;
-            } else {
+                // Set animation to attacking
+                attacking = true;
+            }
+            else
+            {
                 // Set the cooldown to false
                 attackCooldown = false;
+                // Set the animation to idling
+                attacking = false;
             }
         }
         // Countdown time
         attackTimerCounter -= Time.deltaTime;
+    }
+
+    // Reset attack animation on enemy death
+    private void ResetAttackAnimationOnEnemyDeath() {
+        // Check if enemy died
+        if (enemyDied) {
+            // Check if the timer has been set
+            if (!firstChecker) {
+                attackTimerCounter = attackTimer;
+                firstChecker = true;
+            }
+            attackTimerCounter -= Time.deltaTime;
+            // Check if the counter has counted down compeletely
+            if (attackTimerCounter <= 0) {
+                // Reset everything
+                attacking = false;
+                firstChecker = false;
+                enemyDied = false;
+                attackTimerCounter = 0;
+            }
+        }
     }
 }
