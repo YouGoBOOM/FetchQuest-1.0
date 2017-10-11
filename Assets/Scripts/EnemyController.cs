@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour {
 
-    public float healthPoints;              // Enemy HP
     public GameObject thePlayer;            // Gets the player
     public GameObject theMouse;             // Gets the cursor
-    public bool targetted = false;
+    public bool targetted = false;          // Check if the enemy is targetted
+    public float attackValue;               // Enemy attack value
 
 	// Use this for initialization
 	void Start () {

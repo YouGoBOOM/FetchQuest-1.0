@@ -15,10 +15,15 @@ public class SlimeController : EnemyController {
     public float timeToMoveCounter;                  // Counts down the time taken to move
     private Vector3 direction;                       // Direction of movement
     public float deathTimer;                         // Time taken to respawn
-    
-    public GameObject crosshairs;                    // Getting the crosshairs
-    // public bool targetted = false;                   // Check if targetted
+    public float attackTimer;                        // Attack timer of slime
+    public float attackTimerCounter;                 // Counter for the attack timer
     public bool attacking = false;                   // Check if the slime is attacking
+    public bool attackCooldown = false;              // Sets the attack cooldown
+    public GameObject crosshairs;                    // Getting the crosshairs
+    public bool engaging = false;                    // Check if the slime is engaging the player
+    public bool resetHostile = false;                // Resets hostile state
+    public float hostileTimer;                       // Time to cool down hostile state
+    public float hostileTimerCounter;                // Counter for the hostile timer
 
     // Use this for initialization
     void Start () {
@@ -36,6 +41,7 @@ public class SlimeController : EnemyController {
 	
 	// Update is called once per frame
 	void Update () {
+        CheckHostile();
         Moving();
     }
 
@@ -50,8 +56,9 @@ public class SlimeController : EnemyController {
 
     // Function that allows slime to move
     private void Moving() {
-        // Checks if slime is moving
+        // Checks if the slime is not attacking
         if (!attacking) {
+            // Checks if slime is moving
             if (moving) {
                 // Begin countdown
                 timeToMoveCounter -= Time.deltaTime;
@@ -81,8 +88,9 @@ public class SlimeController : EnemyController {
                     direction = new Vector3(Random.Range(-1f, 1f) * moveSpeed + transform.position.x, Random.Range(-1f, 1f) * moveSpeed + transform.position.y, transform.position.z);
                 }
             }
+        // Check if the slime is attacking
         } else {
-
+            AttackPlayer();
         }
         // Check if the player died
         // Need this code snippet for later maybe
@@ -95,5 +103,27 @@ public class SlimeController : EnemyController {
             }
         }
         */
+    }
+
+    // Attack the player
+    public void AttackPlayer() {
+
+    }
+
+    // Check if the slime is still hostile with the player
+    public void CheckHostile() {
+        // Check if the hostile state timer is refreshed
+        if (resetHostile) {
+            hostileTimerCounter = hostileTimer;
+            resetHostile = false;
+        }
+        // Countdown hostile timer
+        if (engaging == true) {
+            hostileTimerCounter -= Time.deltaTime;
+            // Set to docile if hostile state over
+            if (hostileTimerCounter <= 0) {
+                engaging = false;
+            }
+        }
     }
 }

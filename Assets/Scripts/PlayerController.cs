@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour {
 
     // Declaring Variables
-    public float moveSpeed = 4f;             // Walking Movement Speed
+    public float moveSpeed;                  // Walking Movement Speed
     public bool rightMouseClicked = false;   // Check if right mouse was clicked
     public Vector3 mouseWorldSpace;          // Make target for right click global
     private Animator animator;               // Animator
@@ -139,33 +139,27 @@ public class PlayerController : MonoBehaviour {
     }
 
     // Attack an enemy
-    private void AttackEnemy(GameObject enemy)
-    {
+    private void AttackEnemy(GameObject enemy) {
         // 3 stages to attack, first half windup, instance of damage, second half cooldown
-        if (!engaging)
-        {
+        if (!engaging) {
             attackTimerCounter = attackTimer;
             engaging = true;
             attackCooldown = false;
             attacking = false;
         }
         // Check if one of the 2 halves is over
-        if (attackTimerCounter <= 0)
-        {
+        if (attackTimerCounter <= 0) {
             // Set the counter back to the max
             attackTimerCounter = attackTimer;
             // If attack is not on cooldown after one half
-            if (!attackCooldown)
-            {
+            if (!attackCooldown) {
                 // Deal damage
                 enemy.GetComponent<EnemyHealthChange>().SetEnemyHealth(-playerDamage, true);
                 // Set the cooldown to true
                 attackCooldown = true;
                 // Set animation to attacking
                 attacking = true;
-            }
-            else
-            {
+            } else {
                 // Set the cooldown to false
                 attackCooldown = false;
                 // Set the animation to idling
