@@ -9,10 +9,11 @@ public class MouseController : MonoBehaviour {
     private Collider2D myCollider;                  // Collider
     public bool attacking = false;                  // Check if the player is attacking
     public bool selecting = false;                  // Check if the player is selecting
-    public GameObject targettedEnemy = null;        // Set current targetted enemy
-    public GameObject targettingEnemy = null;       // Set the hovered over enemy
-    public bool targetting = false;                 // Check if the player is targetting an enemy
+    public GameObject targetedObject = null;        // Set current targeted object
+    public GameObject targetingObject = null;       // Set the hovered over object
+    public bool targetingEnemy = false;             // Check if the player is targeting an object
     public static bool cursorExists = false;        // Check if mouse exists
+    public bool exitingAfterMovement = false;       // Change level after movement
 
     void Awake () {
         // Sets the default cursor to invisible
@@ -53,18 +54,26 @@ public class MouseController : MonoBehaviour {
         if (Input.GetMouseButtonDown(1)) {
             thePlayer.rightMouseClicked = true;
             thePlayer.playerMoving = true;
-            // If there is a target enemy
-            if (targettingEnemy != null) {
-                // If clicked on the enemy, mouseWorldSpace becomes enemy location
-                if (myCollider.IsTouching(targettingEnemy.GetComponent<CircleCollider2D>())) {
-                    targetting = true;
-                    targettedEnemy = targettingEnemy;
-                    targettedEnemy.GetComponent<SlimeController>().targetted = true;
+            // If there is a target object
+            if (targetingObject != null) {
+                targetedObject = targetingObject;
+                // Check if clicked on an enemy
+                if (targetingObject.tag == "Enemy") {
+                    // MouseWorldSpace becomes enemy location
+                    if (myCollider.IsTouching(targetingObject.GetComponent<CircleCollider2D>())) {
+                        targetingEnemy = true;
+                        targetedObject.GetComponent<SlimeController>().targeted = true;
+                    }
+                } else if (targetingObject.tag == "Exit") {
+                    // MouseWorldSpace becomes exit location
+                    exitingAfterMovement = true;
+                    thePlayer.attacking = false;
                 }
             } else {
-                targetting = false;
-                targettedEnemy = null;
+                targetingEnemy = false;
+                targetedObject = null;
                 thePlayer.engaging = false;
+                thePlayer.attacking = false;
             }
             // Otherwise, mouseWorldSpace becomes location clicked on
             thePlayer.mouseWorldSpace = mouseScreenPositioning(thePlayer.mouseWorldSpace);
@@ -85,7 +94,7 @@ public class MouseController : MonoBehaviour {
         if (coll.gameObject.tag == "Enemy") {
             coll.gameObject.GetComponent<SlimeController>().crosshairs.SetActive(true);
             attacking = true;
-            targettingEnemy = coll.gameObject;
+            targetingObject = coll.gameObject;
         }
     }
 
@@ -94,7 +103,7 @@ public class MouseController : MonoBehaviour {
         if (coll.gameObject.tag == "Enemy") {
             coll.gameObject.GetComponent<SlimeController>().crosshairs.SetActive(false);
             attacking = false;
-            targettingEnemy = null;
+            targetingObject = null;
         }
     }
 }

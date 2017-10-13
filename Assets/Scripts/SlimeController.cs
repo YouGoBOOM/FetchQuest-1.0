@@ -5,10 +5,10 @@ using UnityEngine.SceneManagement;
 
 public class SlimeController : MonoBehaviour {
 
-    public GameObject thePlayer;                    // Gets the player
-    public GameObject theMouse;                     // Gets the cursor
-    public bool targetted = false;                  // Check if the enemy is targetted
-    public float attackValue;                       // Enemy attack value
+    public GameObject thePlayer;                     // Gets the player
+    public GameObject theMouse;                      // Gets the cursor
+    public bool targeted = false;                    // Check if the enemy is targeted
+    public float attackValue;                        // Enemy attack value
     public GameObject crosshairs;                    // Getting the crosshairs
     public float moveSpeed;                          // Slime speed
     private CircleCollider2D slimeCollider;          // Collider for the slime
@@ -63,9 +63,9 @@ public class SlimeController : MonoBehaviour {
     // When destroyed, untarget itself
     void OnDestroy () {
         thePlayer.GetComponent<PlayerController>().engaging = false;
-        targetted = false;
-        theMouse.GetComponent<MouseController>().targettedEnemy = null;
-        theMouse.GetComponent<MouseController>().targetting = false;
+        targeted = false;
+        theMouse.GetComponent<MouseController>().targetedObject = null;
+        theMouse.GetComponent<MouseController>().targetingEnemy = false;
         thePlayer.GetComponent<PlayerController>().enemyDied = true;
     }
 
@@ -75,7 +75,7 @@ public class SlimeController : MonoBehaviour {
         if (moving) {
             // Begin countdown
             timeToMoveCounter -= Time.deltaTime;
-                // FIX ALONG WITH PLAYER COLLISION WITH SOLID
+                // TODO: FIX ALONG WITH PLAYER COLLISION WITH SOLID
                 // Check if slime is colliding with solid layer
                 if (!(slimeCollider.IsTouching(solidCollider))) {
                     // Slime is moving
@@ -103,7 +103,7 @@ public class SlimeController : MonoBehaviour {
             }
         
         // Check if the player died
-        // Need this code snippet for later maybe
+        // TODO: Need this code snippet for later maybe
         /*
         if (reloading) {
             deathTimer -= Time.deltaTime;
@@ -115,7 +115,7 @@ public class SlimeController : MonoBehaviour {
         */
     }
 
-    // Attack the player
+    // Auto-attack the player
     // TODO: SET THIS TO AUTO ATTACK FUNCTION
     public void AttackPlayer() {
         if (distanceFromPlayer <= attackRange) {

@@ -23,20 +23,32 @@ public class Exit : MonoBehaviour {
     void OnTriggerEnter2D(Collider2D other) {
         // EDIT THIS FUNCTION OR REMOVE COMPLETELY IN FUTURE
         // DO SOMETHING IN UPDATE SO THAT PLAYER MOVES INTO MIDDLE OF EXIT SPACE BEFORE LOADING
-        // When player enters exit space, load specific scene
         if (other.gameObject.name == "Player") {
-            SceneManager.LoadScene(levelToLoad);
+            // When player enters exit space, set current exit to this exit
+            other.gameObject.GetComponent<PlayerController>().currentExit = transform.gameObject;
         }
-        // When mouse hovers over exit, activate exitHover
         if (other.gameObject.name == "Cursor") {
+            // When mouse hovers over exit, activate exitHover
             exitHover.SetActive(true);
+            // targeting object is the exit
+            other.gameObject.GetComponent<MouseController>().targetingObject = transform.gameObject;
         }
     }
 
     void OnTriggerExit2D(Collider2D other) {
-        // Disable exitHover when cursor goes off
-        if (other.gameObject.name == "Cursor") {
-            exitHover.SetActive(false);
+        if (other.gameObject.name == "Player") {
+            // When player exits exit space, set current exit to null
+            other.gameObject.GetComponent<PlayerController>().currentExit = null;
         }
+        if (other.gameObject.name == "Cursor") {
+            // Disable exitHover when cursor goes off
+            exitHover.SetActive(false);
+            // targeting object is no longer the exit
+            other.gameObject.GetComponent<MouseController>().targetingObject = null;
+        }
+    }
+
+    public void MoveToLevel() {
+        SceneManager.LoadScene(levelToLoad);
     }
 }

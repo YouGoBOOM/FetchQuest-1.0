@@ -27,6 +27,7 @@ public class PlayerController : MonoBehaviour {
     public bool engaging = false;            // Check if player is engaging
     public bool enemyDied = false;           // Check if the enemy died
     public bool firstChecker = false;        // Check if this is the first time this is called
+    public GameObject currentExit;           // The current exit the player is going towards
     
     // Use this for initialization
     void Start () {
@@ -47,24 +48,25 @@ public class PlayerController : MonoBehaviour {
 	void Update () {
         // Right click movement
         theCursor.OnMouseRightClick();
-        // Check if an enemy is targetted
-        if (theCursor.targetting) {
-            // Get the distance from the targetted enemy
-            distanceFromEnemy = (transform.position - theCursor.targettedEnemy.transform.position).magnitude;
+        // Check if an enemy is targeted
+        if (theCursor.targetingEnemy) {
+            // Get the distance from the targeted enemy
+            distanceFromEnemy = (transform.position - theCursor.targetedObject.transform.position).magnitude;
             if (distanceFromEnemy > attackRange) {
-                // If player targetted enemy, walk towards enemy until at attack range
-                mouseWorldSpace = theCursor.targettedEnemy.transform.position;
+                // If player targeted enemy, walk towards enemy until at attack range
+                mouseWorldSpace = theCursor.targetedObject.transform.position;
                 playerMoving = true;
                 engaging = false;
             } else {
                 // Attack enemy when within range
                 lastDirection = direction;
                 playerMoving = false;
-                AttackEnemy(theCursor.targettedEnemy);
+                AttackEnemy(theCursor.targetedObject);
                 mouseWorldSpace = transform.position;
-                direction = CalculateDirection(theCursor.targettedEnemy.transform.position.x, theCursor.targettedEnemy.transform.position.y, transform.position.x, transform.position.y);
+                direction = CalculateDirection(theCursor.targetedObject.transform.position.x, theCursor.targetedObject.transform.position.y, transform.position.x, transform.position.y);
             }
-        } 
+        }
+        ResetAttackAnimationOnEnemyDeath();
         if (transform.position == mouseWorldSpace || playerCollider.IsTouching(solidCollider)) {
             // Stop moving if at target or touching solid
             if (!engaging) {
@@ -74,8 +76,6 @@ public class PlayerController : MonoBehaviour {
             // Move until at target
             MovingToTarget(mouseWorldSpace);
         }
-        ResetAttackAnimationOnEnemyDeath();
-
         // Set parameters in animator
         animator.SetFloat("CurrentDirection", direction);
         animator.SetFloat("LastDirection", lastDirection);
@@ -135,6 +135,10 @@ public class PlayerController : MonoBehaviour {
         if (playerCollider.IsTouching(solidCollider))
         {
             transform.position = Vector3.MoveTowards(transform.position, lastLocation, moveSpeed * Time.deltaTime);
+        }
+        if (theCursor.exitingAfterMovement) {
+            theCursor.exitingAfterMovement = false;
+            currentExit.GetComponent<Exit>().MoveToLevel();
         }
     }
 
