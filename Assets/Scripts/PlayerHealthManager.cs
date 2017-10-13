@@ -6,7 +6,7 @@ public class PlayerHealthManager : MonoBehaviour {
 
     public float playerMaxHeatlh;                   // Player's maximum health
     public float playerCurrentHealth;               // Player's current health
-    public bool overheal = false;
+    public bool overheal = false;                   // Activate the grace period on the overheal
     public float overhealDegradeGraceTimer;         // Amount of time before health begins to degrade
     public float overhealDegradeGraceTimerCounter;  // Counter for overheal degrade grace timer
     public float overhealDegradeTimer;              // Amount of time between health degragation
@@ -25,6 +25,7 @@ public class PlayerHealthManager : MonoBehaviour {
         if (playerCurrentHealth > playerMaxHeatlh) {
             Overheal();
         }
+        // Unfair stupid healing button for development purposes
         if (Input.GetKeyDown("h")) {
             UnfairStupidHealing();
         }

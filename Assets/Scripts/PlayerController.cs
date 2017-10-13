@@ -155,6 +155,8 @@ public class PlayerController : MonoBehaviour {
             if (!attackCooldown) {
                 // Deal damage
                 enemy.GetComponent<EnemyHealthChange>().SetEnemyHealth(-playerDamage, true);
+                // Make the enemy hostile
+                enemy.GetComponent<SlimeController>().resetHostile = true;
                 // Set the cooldown to true
                 attackCooldown = true;
                 // Set animation to attacking

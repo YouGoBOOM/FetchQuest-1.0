@@ -3,8 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SlimeController : EnemyController {
-    
+public class SlimeController : MonoBehaviour {
+
+    public GameObject thePlayer;                    // Gets the player
+    public GameObject theMouse;                     // Gets the cursor
+    public bool targetted = false;                  // Check if the enemy is targetted
+    public float attackValue;                       // Enemy attack value
+    public GameObject crosshairs;                    // Getting the crosshairs
     public float moveSpeed;                          // Slime speed
     private CircleCollider2D slimeCollider;          // Collider for the slime
     private PolygonCollider2D solidCollider;         // Collider for solid layer
@@ -19,11 +24,14 @@ public class SlimeController : EnemyController {
     public float attackTimerCounter;                 // Counter for the attack timer
     public bool attacking = false;                   // Check if the slime is attacking
     public bool attackCooldown = false;              // Sets the attack cooldown
-    public GameObject crosshairs;                    // Getting the crosshairs
+    public float attackDamage;                       // Amount of damage slime does per hit
+    public float attackRange;                        // Attack range of slime
     public bool engaging = false;                    // Check if the slime is engaging the player
     public bool resetHostile = false;                // Resets hostile state
+    public bool hardResetHostile = false;            // Check if first reset in a while
     public float hostileTimer;                       // Time to cool down hostile state
     public float hostileTimerCounter;                // Counter for the hostile timer
+    public float distanceFromPlayer;                 // Distance from player
 
     // Use this for initialization
     void Start () {
@@ -36,13 +44,20 @@ public class SlimeController : EnemyController {
         crosshairs.SetActive(false);                                 // Disable the crosshairs
         // Getting the player
         thePlayer = GameObject.FindGameObjectWithTag("Player");
+        // Getting the mouse
         theMouse = FindObjectOfType<MouseController>().gameObject;
     }
 	
 	// Update is called once per frame
 	void Update () {
         CheckHostile();
-        Moving();
+        // Checks if the slime is not attacking
+        if (!engaging) {
+            Moving();
+        // Check if the slime is attacking
+        } else {
+            AttackPlayer();
+        }
     }
 
     // When destroyed, untarget itself
@@ -56,12 +71,10 @@ public class SlimeController : EnemyController {
 
     // Function that allows slime to move
     private void Moving() {
-        // Checks if the slime is not attacking
-        if (!attacking) {
-            // Checks if slime is moving
-            if (moving) {
-                // Begin countdown
-                timeToMoveCounter -= Time.deltaTime;
+        // Checks if slime is moving
+        if (moving) {
+            // Begin countdown
+            timeToMoveCounter -= Time.deltaTime;
                 // FIX ALONG WITH PLAYER COLLISION WITH SOLID
                 // Check if slime is colliding with solid layer
                 if (!(slimeCollider.IsTouching(solidCollider))) {
@@ -88,10 +101,7 @@ public class SlimeController : EnemyController {
                     direction = new Vector3(Random.Range(-1f, 1f) * moveSpeed + transform.position.x, Random.Range(-1f, 1f) * moveSpeed + transform.position.y, transform.position.z);
                 }
             }
-        // Check if the slime is attacking
-        } else {
-            AttackPlayer();
-        }
+        
         // Check if the player died
         // Need this code snippet for later maybe
         /*
@@ -106,8 +116,32 @@ public class SlimeController : EnemyController {
     }
 
     // Attack the player
+    // TODO: SET THIS TO AUTO ATTACK FUNCTION
     public void AttackPlayer() {
-
+        if (distanceFromPlayer <= attackRange) {
+            // Check if one of the 2 halves is over
+            if (attackTimerCounter <= 0) {
+                // Set the counter back to the max
+                attackTimerCounter = attackTimer;
+                // If attack is not on cooldown after one half
+                if (!attackCooldown) {
+                    // Deal damage
+                    thePlayer.GetComponent<PlayerHealthManager>().SetCurrentHeatlh(-attackDamage, true);
+                    // Set the cooldown to true
+                    attackCooldown = true;
+                } else {
+                    // Set the cooldown to false
+                    attackCooldown = false;
+                }
+            }
+            // Countdown time
+            attackTimerCounter -= Time.deltaTime;
+        } else {
+            if (!(slimeCollider.IsTouching(solidCollider))) {
+                // Slime is moving
+                transform.position = Vector3.MoveTowards(transform.position, thePlayer.transform.position, moveSpeed * Time.deltaTime);
+            }
+        }
     }
 
     // Check if the slime is still hostile with the player
@@ -116,6 +150,15 @@ public class SlimeController : EnemyController {
         if (resetHostile) {
             hostileTimerCounter = hostileTimer;
             resetHostile = false;
+            engaging = true;
+            // Reset if haven't reset in a while
+            if (!hardResetHostile) {
+                attackTimerCounter = attackTimer;
+                attackCooldown = true;
+                timeBetweenMoveCounter = Random.Range(timeBetweenMove * 0.75f, timeBetweenMove * 1.25f);
+                timeToMoveCounter = Random.Range(timeToMove * 0.75f, timeToMove * 1.25f);
+                hardResetHostile = true;
+            }
         }
         // Countdown hostile timer
         if (engaging == true) {
@@ -123,7 +166,10 @@ public class SlimeController : EnemyController {
             // Set to docile if hostile state over
             if (hostileTimerCounter <= 0) {
                 engaging = false;
+                hardResetHostile = false;
             }
+            // Find distance from player
+            distanceFromPlayer = (transform.position - thePlayer.transform.position).magnitude;
         }
     }
 }

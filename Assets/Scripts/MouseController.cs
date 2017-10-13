@@ -64,6 +64,7 @@ public class MouseController : MonoBehaviour {
             } else {
                 targetting = false;
                 targettedEnemy = null;
+                thePlayer.engaging = false;
             }
             // Otherwise, mouseWorldSpace becomes location clicked on
             thePlayer.mouseWorldSpace = mouseScreenPositioning(thePlayer.mouseWorldSpace);
