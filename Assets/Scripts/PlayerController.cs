@@ -66,6 +66,7 @@ public class PlayerController : MonoBehaviour {
                 direction = CalculateDirection(theCursor.targetedObject.transform.position.x, theCursor.targetedObject.transform.position.y, transform.position.x, transform.position.y);
             }
         }
+        // When the targeted enemy dies, reset attack animation
         ResetAttackAnimationOnEnemyDeath();
         if (transform.position == mouseWorldSpace || playerCollider.IsTouching(solidCollider)) {
             // Stop moving if at target or touching solid

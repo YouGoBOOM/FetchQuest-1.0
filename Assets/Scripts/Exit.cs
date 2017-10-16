@@ -6,13 +6,12 @@ using UnityEngine.SceneManagement;
 public class Exit : MonoBehaviour {
 
     public string levelToLoad;              // Goes to level
-    private GameObject exitHover;           // Getting the exitHover
+    private GameObject exitHover;           // Getting the exit hover
 
     // Use this for initialization
     void Start () {
         exitHover = transform.GetChild(0).gameObject;               // Getting the exit hover
         exitHover.SetActive(false);                                 // Disable the exit hover
-
     }
 	
 	// Update is called once per frame
