@@ -25,9 +25,9 @@ public class MouseController : MonoBehaviour {
         // Check between levels if cursor exists
         if (!cursorExists) {
             cursorExists = true;
-            DontDestroyOnLoad(transform.gameObject);
+            DontDestroyOnLoad(gameObject);
         } else {
-            Destroy(transform.gameObject);
+            Destroy(gameObject);
         }
         myAnimator = GetComponent<Animator>();                    // Getting Animator
         thePlayer = FindObjectOfType<PlayerController>();         // Getting the player

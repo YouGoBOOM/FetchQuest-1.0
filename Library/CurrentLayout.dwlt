@@ -387,10 +387,10 @@ MonoBehaviour:
     width: 267
     height: 383
   m_TreeViewState:
-    scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: b8fbffff
-    m_LastClickedID: -1096
-    m_ExpandedIDs: e8fbffff00000000
+    scrollPos: {x: 0, y: 2}
+    m_SelectedIDs: 9c64f9ff
+    m_LastClickedID: -432996
+    m_ExpandedIDs: dc83f9ff8084faffa882fbffc282fbffce82fbffda82fbff92fbffffe8fbfffff4ffffff000000005e390000e27e0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -440,14 +440,14 @@ MonoBehaviour:
     width: 816
     height: 383
   m_SceneLighting: 1
-  lastFramingTime: 0
+  lastFramingTime: 67601.03342524536
   m_2DMode: 1
   m_isRotationLocked: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 59.76288, y: -28.049929, z: 2.0585938}
+    m_Target: {x: 240.5905, y: 315.62775, z: 0}
     speed: 2
-    m_Value: {x: 59.76288, y: -28.049929, z: 2.0585938}
+    m_Value: {x: 240.5905, y: 315.62775, z: 0}
   m_RenderMode: 0
   m_ValidateTrueMetals: 0
   m_SceneViewState:
@@ -474,14 +474,14 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 7.128621
+    m_Target: 268.59796
     speed: 2
-    m_Value: 7.128621
+    m_Value: 268.59796
   m_Ortho:
     m_Target: 1
     speed: 2
     m_Value: 1
-  m_LastSceneViewRotation: {x: -0.08717229, y: 0.89959055, z: -0.21045254, w: -0.3726226}
+  m_LastSceneViewRotation: {x: 0.08717229, y: -0.89959055, z: 0.21045254, w: 0.3726226}
   m_LastSceneViewOrtho: 0
   m_ReplacementShader: {fileID: 0}
   m_ReplacementString: 
@@ -550,18 +550,18 @@ MonoBehaviour:
     m_ShowAllHits: 0
     m_SearchArea: 0
     m_Folders:
-    - Assets/Prefabs
+    - Assets/Scripts
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Prefabs
+  - Assets/Scripts
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Users\Nathan\Documents\FetchQuest 1.0
   m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 27}
-    m_SelectedIDs: 38380000
-    m_LastClickedID: 14392
+    scrollPos: {x: 0, y: 0}
+    m_SelectedIDs: a8320000
+    m_LastClickedID: 12968
     m_ExpandedIDs: 000000001825000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -617,8 +617,8 @@ MonoBehaviour:
   m_ListAreaState:
     m_SelectedInstanceIDs: 
     m_LastClickedInstanceID: 0
-    m_HadKeyboardFocusLastEvent: 1
-    m_ExpandedInstanceIDs: b833000004390000
+    m_HadKeyboardFocusLastEvent: 0
+    m_ExpandedInstanceIDs: b83300000439000000000000a8330000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -634,7 +634,7 @@ MonoBehaviour:
       m_IsRenaming: 0
       m_OriginalEventType: 11
       m_IsRenamingFilename: 1
-      m_ClientGUIView: {fileID: 0}
+      m_ClientGUIView: {fileID: 11}
     m_CreateAssetUtility:
       m_EndAction: {fileID: 0}
       m_InstanceID: 0

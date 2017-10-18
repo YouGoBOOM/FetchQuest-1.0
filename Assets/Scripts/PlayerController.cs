@@ -34,7 +34,7 @@ public class PlayerController : MonoBehaviour {
         // Check between levels if player exists
         if (!playerExists) {
             playerExists = true;
-            DontDestroyOnLoad(transform.gameObject);
+            DontDestroyOnLoad(gameObject);
         } else {
             Destroy(gameObject);
         }
