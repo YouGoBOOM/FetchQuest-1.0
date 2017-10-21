@@ -7,11 +7,15 @@ public class Exit : MonoBehaviour {
 
     public string levelToLoad;              // Goes to level
     private GameObject exitHover;           // Getting the exit hover
+    public string exitPoint;                // Getting specific exit point
+    private PlayerController thePlayer;     // Getting the player
 
     // Use this for initialization
     void Start () {
         exitHover = transform.GetChild(0).gameObject;               // Getting the exit hover
         exitHover.SetActive(false);                                 // Disable the exit hover
+        // Getting the player
+        thePlayer = GameObject.FindObjectOfType<PlayerController>();
     }
 	
 	// Update is called once per frame
@@ -20,11 +24,10 @@ public class Exit : MonoBehaviour {
 	}
 
     void OnTriggerEnter2D(Collider2D other) {
-        // EDIT THIS FUNCTION OR REMOVE COMPLETELY IN FUTURE
-        // DO SOMETHING IN UPDATE SO THAT PLAYER MOVES INTO MIDDLE OF EXIT SPACE BEFORE LOADING
         if (other.gameObject.name == "Player") {
             // When player enters exit space, set current exit to this exit
-            other.gameObject.GetComponent<PlayerController>().currentExit = transform.gameObject;
+            thePlayer.currentExit = gameObject;
+            thePlayer.startPoint = exitPoint;
         }
         if (other.gameObject.name == "Cursor") {
             // When mouse hovers over exit, activate exitHover

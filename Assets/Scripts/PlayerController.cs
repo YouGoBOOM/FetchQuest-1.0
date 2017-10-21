@@ -28,6 +28,7 @@ public class PlayerController : MonoBehaviour {
     public bool enemyDied = false;           // Check if the enemy died
     public bool firstChecker = false;        // Check if this is the first time this is called
     public GameObject currentExit;           // The current exit the player is going towards
+    public string startPoint;                // The specific start point
     
     // Use this for initialization
     void Start () {
@@ -158,10 +159,13 @@ public class PlayerController : MonoBehaviour {
             attackTimerCounter = attackTimer;
             // If attack is not on cooldown after one half
             if (!attackCooldown) {
-                // Deal damage
-                enemy.GetComponent<EnemyHealthChange>().SetEnemyHealth(-playerDamage, true);
-                // Make the enemy hostile
-                enemy.GetComponent<SlimeController>().resetHostile = true;
+                // Check what player is targeting
+                if (enemy.GetComponent<SlimeController>().targeted == true && engaging) {
+                    // Deal damage
+                    enemy.GetComponent<EnemyHealthChange>().SetEnemyHealth(-playerDamage, true);
+                    // Make the enemy hostile
+                    enemy.GetComponent<SlimeController>().resetHostile = true;
+                }
                 // Set the cooldown to true
                 attackCooldown = true;
                 // Set animation to attacking

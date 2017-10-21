@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class EnemyHealthChange : MonoBehaviour {
 
+    public string enemyName;                    // Get name of enemy
     public float currentHealthPoints;           // Set current health points
     public float maxHealthPoints;               // Set maximum health points
     public GameObject damageParticles;          // Getting the damage particles

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIManager : MonoBehaviour {
+public class UIPlayerManager : MonoBehaviour {
 
     public Slider healthBar;                            // Getting the health bar in the HUD
     public Text healthPoints;                           // Getting the text in the HUD
