@@ -6,7 +6,6 @@ public class MouseController : MonoBehaviour {
 
     private PlayerController thePlayer;                 // Getting the player
     private Animator myAnimator;                        // Animator
-    //private Collider2D myCollider;                      // Collider
     public bool attacking = false;                      // Check if the player is attacking
     public bool selecting = false;                      // Check if the player is selecting
     public GameObject targetedObject = null;            // Set current targeted object
@@ -41,7 +40,6 @@ public class MouseController : MonoBehaviour {
 
         myAnimator = GetComponent<Animator>();                    // Getting Animator
         thePlayer = FindObjectOfType<PlayerController>();         // Getting the player
-        //myCollider = GetComponent<Collider2D>();                  // Getting Collider
         // Getting the UI Targeted Object Manager
     }
 	
@@ -94,6 +92,7 @@ public class MouseController : MonoBehaviour {
                 } else if (targetingObject.tag == "Exit") {
                     // MouseWorldSpace becomes exit location
                     exitingAfterMovement = true;
+                    targetingEnemy = false;
                     thePlayer.engaging = false;
                     thePlayer.attacking = false;
                     targetedShownEnemy = null;

@@ -8,7 +8,7 @@ public class EnemyHealthChange : MonoBehaviour {
     public float currentHealthPoints;           // Set current health points
     public float maxHealthPoints;               // Set maximum health points
     public GameObject damageParticles;          // Getting the damage particles
-    public GameObject damageNumbers;            // Getting the damage numbers
+    public GameObject healthChangeNumbers;      // Getting the damage numbers
 
 	// Use this for initialization
 	void Start () {
@@ -29,8 +29,8 @@ public class EnemyHealthChange : MonoBehaviour {
             if (healthChange < 0) {
                 GameObject damageParticlesClone = Instantiate(damageParticles, transform.position, transform.rotation);
                 Destroy(damageParticlesClone, 1.0f);
-                GameObject damageNumbersClone = Instantiate(damageNumbers, transform.position, transform.rotation);
-                damageNumbersClone.GetComponent<FloatingNumbers>().healthChange = healthChange;
+                GameObject healthNumbersClone = Instantiate(healthChangeNumbers, transform.position, transform.rotation);
+                healthNumbersClone.GetComponent<FloatingNumbers>().healthChange = healthChange;
             }
         // Hard set
         } else {

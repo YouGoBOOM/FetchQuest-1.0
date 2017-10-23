@@ -12,6 +12,7 @@ public class PlayerHealthManager : MonoBehaviour {
     public float overhealDegradeTimer;              // Amount of time between health degragation
     public float overhealDegradeTimerCounter;       // Counter for overheal degrade timer
     public float overhealDegradeAmount;             // Amount of health lost during overheal
+    public GameObject healthChangeNumbers;          // Getting the damage numbers
 
     // Use this for initialization
     void Start () {
@@ -26,6 +27,7 @@ public class PlayerHealthManager : MonoBehaviour {
             Overheal();
         }
         // Unfair stupid healing button for development purposes
+        // GET RID OF THIS LATER
         if (Input.GetKeyDown("h")) {
             UnfairStupidHealing();
         }
@@ -40,8 +42,18 @@ public class PlayerHealthManager : MonoBehaviour {
         if (relative) {
             // Heal or damage value health
             playerCurrentHealth += healthValue;
-            if (playerCurrentHealth > playerMaxHeatlh) {
+            // Numbers on health change
+            GameObject healthNumbersClone = Instantiate(healthChangeNumbers, transform.position, transform.rotation);
+            healthNumbersClone.GetComponent<FloatingNumbers>().healthChange = healthValue;
+            // Check if healed and/or overhealed
+            if (playerCurrentHealth > playerMaxHeatlh && healthValue > 0) {
                 overheal = true;
+            }
+            // Set color based on healing or damage
+            if (healthValue >= 0) {
+                healthNumbersClone.GetComponent<FloatingNumbers>().originalColor = Color.green;
+            } else if (healthValue < 0) {
+                healthNumbersClone.GetComponent<FloatingNumbers>().originalColor = Color.red;
             }
         } else {
             // Hard set health to value
