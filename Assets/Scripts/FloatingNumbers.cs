@@ -6,18 +6,23 @@ using UnityEngine.UI;
 public class FloatingNumbers : MonoBehaviour {
 
     public float movespeed;             // Speed of the floating number
-    public float healthChange;          // Amount of health lost or gained
+    public float valueChange;           // Amount of health lost or gained
     public Text displayNumber;          // Text box with the floating numbers numbers
     public float fadeOutTimer;          // Time required to fade out
     public float stillTimer;            // Time to keep the number still
     public float entireTimer;           // Both timers
     public float numberTimerCounter;    // Timer for the number existance
     public Color originalColor;         // Original color of text
+    public bool checkEXP;               // Check if gaining EXP
 
     // Use this for initialization
     void Start () {
-        // Set text to health change
-        displayNumber.text = "" + healthChange;
+        // Set text to value change
+        if (checkEXP) {
+            displayNumber.text = "" + valueChange + " EXP";
+        } else {
+            displayNumber.text = "" + valueChange;
+        }
         // Set original color to current color
         originalColor = displayNumber.color;
         // Set entire timer to still timer plus fade out timer

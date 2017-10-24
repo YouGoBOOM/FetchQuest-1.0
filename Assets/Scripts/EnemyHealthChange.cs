@@ -9,10 +9,13 @@ public class EnemyHealthChange : MonoBehaviour {
     public float maxHealthPoints;               // Set maximum health points
     public GameObject damageParticles;          // Getting the damage particles
     public GameObject healthChangeNumbers;      // Getting the damage numbers
+    public PlayerLevelStats playerLevelStats;   // Getting the player level stats
+    public int EXPGain;                         // EXP gained from killing enemy
 
 	// Use this for initialization
 	void Start () {
         currentHealthPoints = maxHealthPoints;  // Set current health to maximum
+        playerLevelStats = FindObjectOfType<PlayerLevelStats>();
 	}
 	
 	// Update is called once per frame
@@ -30,7 +33,8 @@ public class EnemyHealthChange : MonoBehaviour {
                 GameObject damageParticlesClone = Instantiate(damageParticles, transform.position, transform.rotation);
                 Destroy(damageParticlesClone, 1.0f);
                 GameObject healthNumbersClone = Instantiate(healthChangeNumbers, transform.position, transform.rotation);
-                healthNumbersClone.GetComponent<FloatingNumbers>().healthChange = healthChange;
+                healthNumbersClone.GetComponent<FloatingNumbers>().valueChange = healthChange;
+                healthNumbersClone.GetComponent<FloatingNumbers>().displayNumber.color = Color.red;
             }
         // Hard set
         } else {
@@ -41,6 +45,7 @@ public class EnemyHealthChange : MonoBehaviour {
     // Check if enemy is dead
     public void CheckDead() {
         if (currentHealthPoints <= 0) {
+            playerLevelStats.SetPlayerEXP(EXPGain, true);
             Destroy(gameObject);
         }
     }

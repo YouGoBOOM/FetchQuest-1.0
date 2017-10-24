@@ -53,6 +53,7 @@
      <Compile Include="Assets\Scripts\MouseController.cs" />
      <Compile Include="Assets\Scripts\PlayerController.cs" />
      <Compile Include="Assets\Scripts\PlayerHealthManager.cs" />
+     <Compile Include="Assets\Scripts\PlayerLevelStats.cs" />
      <Compile Include="Assets\Scripts\PlayerStartPoint.cs" />
      <Compile Include="Assets\Scripts\SlimeController.cs" />
      <Compile Include="Assets\Scripts\UIPlayerManager.cs" />

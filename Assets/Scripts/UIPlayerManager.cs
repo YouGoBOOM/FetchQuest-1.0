@@ -6,8 +6,10 @@ using UnityEngine.UI;
 public class UIPlayerManager : MonoBehaviour {
 
     public Slider healthBar;                            // Getting the health bar in the HUD
-    public Text healthPoints;                           // Getting the text in the HUD
+    public Text healthPoints;                           // Getting the health text in the HUD
     public PlayerHealthManager playerHealthManager;     // Getting the player health manager
+    public Text level;                                  // Getting the level text in the HUD
+    public PlayerLevelStats playerLevelStats;           // Getting the player level stats
     public static bool UIExists;                        // Check if UI already exists
 
 	// Use this for initialization
@@ -27,5 +29,6 @@ public class UIPlayerManager : MonoBehaviour {
         healthBar.value = playerHealthManager.playerCurrentHealth;  // Current health on bar
         // Current health vs max health in text
         healthPoints.text = "" + playerHealthManager.playerCurrentHealth + "/" + playerHealthManager.playerMaxHeatlh;
-	}
+        level.text = "LVL: " + playerLevelStats.currentLevel;
+    }
 }
