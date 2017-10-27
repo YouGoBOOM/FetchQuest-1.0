@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class PlayerHealthManager : MonoBehaviour {
 
-    public float playerMaxHeatlh;                       // Player's maximum health
-    public float playerCurrentHealth;                   // Player's current health
+    public int playerMaxHeatlh;                       // Player's maximum health
+    public int playerCurrentHealth;                   // Player's current health
     public bool overheal = false;                       // Activate the grace period on the overheal
     public float overhealDegradeGraceTimer;             // Amount of time before health begins to degrade
     public float overhealDegradeGraceTimerCounter;      // Counter for overheal degrade grace timer
@@ -42,7 +42,7 @@ public class PlayerHealthManager : MonoBehaviour {
 	}
 
     // Set player health
-    public void SetCurrentHeatlh(float healthValue, bool relative) {
+    public void SetCurrentHeatlh(int healthValue, bool relative) {
         if (relative) {
             // Heal or damage value health
             playerCurrentHealth += healthValue;
@@ -92,7 +92,7 @@ public class PlayerHealthManager : MonoBehaviour {
                 if (playerCurrentHealth - overhealDegradeAmount * overhealDegradeCurrentMultiplier <= playerMaxHeatlh) {
                     playerCurrentHealth -= playerCurrentHealth - playerMaxHeatlh;
                 } else {
-                    playerCurrentHealth -= overhealDegradeAmount * overhealDegradeCurrentMultiplier;
+                    playerCurrentHealth -= Mathf.RoundToInt(overhealDegradeAmount * overhealDegradeCurrentMultiplier);
                 }
                 overhealDegradeTimerCounter = overhealDegradeTimer;
             }
@@ -112,5 +112,12 @@ public class PlayerHealthManager : MonoBehaviour {
     // REMOVE OR DISABLE AT LATER TIME
     private void UnfairStupidHealing() {
         SetCurrentHeatlh(50, true);
+    }
+
+    // Find current health percentage
+    public void CurrentHealthPercentage(int addToMaxHealth) {
+        float healthPercentage = playerCurrentHealth / playerMaxHeatlh;
+        playerMaxHeatlh += addToMaxHealth;
+        playerCurrentHealth = Mathf.RoundToInt(healthPercentage * playerMaxHeatlh);
     }
 }

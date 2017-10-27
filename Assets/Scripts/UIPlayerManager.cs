@@ -7,6 +7,8 @@ public class UIPlayerManager : MonoBehaviour {
 
     public Slider healthBar;                            // Getting the health bar in the HUD
     public Text healthPoints;                           // Getting the health text in the HUD
+    public Slider experienceBar;                        // Getting the exp bar in the HUD
+    public Text experiencePoints;                       // Gettin gthe exp text in the HUD
     public PlayerHealthManager playerHealthManager;     // Getting the player health manager
     public Text level;                                  // Getting the level text in the HUD
     public PlayerLevelStats playerLevelStats;           // Getting the player level stats
@@ -21,14 +23,27 @@ public class UIPlayerManager : MonoBehaviour {
         } else {
             Destroy(gameObject);
         }
-	}
+        gameObject.GetComponent<Canvas>().sortingLayerName = "HUD";
+        gameObject.GetComponent<Canvas>().sortingOrder = 1;
+    }
 	
 	// Update is called once per frame
 	void Update () {
-        healthBar.maxValue = playerHealthManager.playerMaxHeatlh;   // Max health on bar
-        healthBar.value = playerHealthManager.playerCurrentHealth;  // Current health on bar
-        // Current health vs max health in text
+        // Health values
+        healthBar.maxValue = playerHealthManager.playerMaxHeatlh;
+        healthBar.value = playerHealthManager.playerCurrentHealth;
         healthPoints.text = "" + playerHealthManager.playerCurrentHealth + "/" + playerHealthManager.playerMaxHeatlh;
-        level.text = "LVL: " + playerLevelStats.currentLevel;
+        // Experience values
+        if (!playerLevelStats.atMaxLevel) {
+            experienceBar.maxValue = playerLevelStats.requiredEXP[playerLevelStats.currentLevel];
+            experienceBar.value = playerLevelStats.experience;
+            experiencePoints.text = "EXP: " + playerLevelStats.experience + " / " + playerLevelStats.requiredEXP[playerLevelStats.currentLevel];
+            level.text = "LVL: " + playerLevelStats.currentLevel;
+        } else {
+            experienceBar.maxValue = 1;
+            experienceBar.value = 1;
+            experiencePoints.text = "MAX LEVEL REACHED";
+            level.text = "LVL: MAX";
+        } 
     }
 }

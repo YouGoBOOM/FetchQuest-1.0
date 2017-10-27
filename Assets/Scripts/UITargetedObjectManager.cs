@@ -22,6 +22,8 @@ public class UITargetedObjectManager : MonoBehaviour {
         } else {
             Destroy(gameObject);
         }
+        gameObject.GetComponent<Canvas>().sortingLayerName = "HUD";
+        gameObject.GetComponent<Canvas>().sortingOrder = 1;
     }
 	
 	// Update is called once per frame

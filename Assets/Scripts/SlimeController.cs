@@ -5,33 +5,33 @@ using UnityEngine.SceneManagement;
 
 public class SlimeController : MonoBehaviour {
 
-    public GameObject thePlayer;                     // Gets the player
-    public GameObject theMouse;                      // Gets the cursor
-    public bool targeted = false;                    // Check if the enemy is targeted
-    public float attackValue;                        // Enemy attack value
-    public GameObject crosshairs;                    // Getting the crosshairs
-    public float moveSpeed;                          // Slime speed
-    private CircleCollider2D slimeCollider;          // Collider for the slime
-    private PolygonCollider2D solidCollider;         // Collider for solid layer
-    private bool moving = false;                     // Check if slime is moving
-    public float timeBetweenMove;                    // Time in between random movements
-    public float timeBetweenMoveCounter;             // Counts down the time in between random movements
-    public float timeToMove;                         // Time taken to move
-    public float timeToMoveCounter;                  // Counts down the time taken to move
-    private Vector3 direction;                       // Direction of movement
-    public float deathTimer;                         // Time taken to respawn
-    public float attackTimer;                        // Attack timer of slime
-    public float attackTimerCounter;                 // Counter for the attack timer
-    public bool attacking = false;                   // Check if the slime is attacking
-    public bool attackCooldown = false;              // Sets the attack cooldown
-    public float attackDamage;                       // Amount of damage slime does per hit
-    public float attackRange;                        // Attack range of slime
-    public bool engaging = false;                    // Check if the slime is engaging the player
-    public bool resetHostile = false;                // Resets hostile state
-    public bool hardResetHostile = false;            // Check if first reset in a while
-    public float hostileTimer;                       // Time to cool down hostile state
-    public float hostileTimerCounter;                // Counter for the hostile timer
-    public float distanceFromPlayer;                 // Distance from player
+    public GameObject thePlayer;                        // Gets the player
+    public GameObject theMouse;                         // Gets the cursor
+    public bool targeted = false;                       // Check if the enemy is targeted
+    public int attackValue;                             // Enemy attack value
+    public GameObject crosshairs;                       // Getting the crosshairs
+    public float moveSpeed;                             // Slime speed
+    private CircleCollider2D slimeCollider;             // Collider for the slime
+    private PolygonCollider2D solidCollider;            // Collider for solid layer
+    private bool moving = false;                        // Check if slime is moving
+    public float timeBetweenMove;                       // Time in between random movements
+    public float timeBetweenMoveCounter;                // Counts down the time in between random movements
+    public float timeToMove;                            // Time taken to move
+    public float timeToMoveCounter;                     // Counts down the time taken to move
+    private Vector3 direction;                          // Direction of movement
+    public float deathTimer;                            // Time taken to respawn
+    public float attackTimer;                           // Attack timer of slime
+    public float attackTimerCounter;                    // Counter for the attack timer
+    public bool attacking = false;                      // Check if the slime is attacking
+    public bool attackCooldown = false;                 // Sets the attack cooldown
+    public int attackDamage;                            // Amount of damage slime does per hit
+    public float attackRange;                           // Attack range of slime
+    public bool engaging = false;                       // Check if the slime is engaging the player
+    public bool resetHostile = false;                   // Resets hostile state
+    public bool hardResetHostile = false;               // Check if first reset in a while
+    public float hostileTimer;                          // Time to cool down hostile state
+    public float hostileTimerCounter;                   // Counter for the hostile timer
+    public float distanceFromPlayer;                    // Distance from player
 
     // Use this for initialization
     void Start () {

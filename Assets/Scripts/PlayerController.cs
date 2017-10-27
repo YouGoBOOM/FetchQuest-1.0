@@ -23,7 +23,7 @@ public class PlayerController : MonoBehaviour {
     private MouseController theCursor;       // Getting the mouse
     public float distanceFromEnemy;          // Distance from target enemy
     public float attackRange;                // Distance from target enemy
-    public float playerDamage;               // Amount of damage the player deals
+    public int playerDamage;                 // Amount of damage the player deals
     public bool engaging = false;            // Check if player is engaging
     public bool enemyDied = false;           // Check if the enemy died
     public bool firstChecker = false;        // Check if this is the first time this is called
