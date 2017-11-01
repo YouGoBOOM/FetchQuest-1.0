@@ -21,9 +21,11 @@ public class PlayerController : MonoBehaviour {
     public bool attackCooldown = false;      // Sets the attack cooldown
     public static bool playerExists = false; // Check if the player already exists
     private MouseController theCursor;       // Getting the mouse
+    private PlayerLevelStats playerStats;    // Getting the player stats
     public float distanceFromEnemy;          // Distance from target enemy
     public float attackRange;                // Distance from target enemy
-    public int playerDamage;                 // Amount of damage the player deals
+    public int weaponDamage;                 // Amount of damage the weapon deals
+    public int armourDefense;                // Amount of defense from the armour
     public bool engaging = false;            // Check if player is engaging
     public bool enemyDied = false;           // Check if the enemy died
     public bool firstChecker = false;        // Check if this is the first time this is called
@@ -43,6 +45,8 @@ public class PlayerController : MonoBehaviour {
         animator = GetComponent<Animator>();                // Getting Animator
         playerCollider = GetComponent<Collider2D>();        // Getting player Collider 2D
         theCursor = FindObjectOfType<MouseController>();    // Getting the mouse
+        // Getting the player level stats
+        playerStats = gameObject.GetComponent<PlayerLevelStats>();
     }
 	
 	// Update is called once per frame
@@ -78,6 +82,7 @@ public class PlayerController : MonoBehaviour {
             // Move until at target
             MovingToTarget(mouseWorldSpace);
         }
+        
         // Set parameters in animator
         animator.SetFloat("CurrentDirection", direction);
         animator.SetFloat("LastDirection", lastDirection);
@@ -128,8 +133,7 @@ public class PlayerController : MonoBehaviour {
         rightMouseClicked = false;
         playerMoving = false;
         // Collision check
-        if (playerCollider.IsTouching(solidCollider))
-        {
+        if (playerCollider.IsTouching(solidCollider)) {
             transform.position = Vector3.MoveTowards(transform.position, lastLocation, moveSpeed * Time.deltaTime);
         }
         if (theCursor.exitingAfterMovement) {
@@ -140,6 +144,9 @@ public class PlayerController : MonoBehaviour {
 
     // Attack an enemy
     private void AttackEnemy(GameObject enemy) {
+        // Reduce amount of getting component
+        SlimeController targetedEnemyController = enemy.GetComponent<SlimeController>();
+        EnemyStatsManager targetedEnemyStats = enemy.GetComponent<EnemyStatsManager>();
         // 3 stages to attack, first half windup, instance of damage, second half cooldown
         if (!engaging) {
             attackTimerCounter = attackTimer;
@@ -154,11 +161,32 @@ public class PlayerController : MonoBehaviour {
             // If attack is not on cooldown after one half
             if (!attackCooldown) {
                 // Check what player is targeting
-                if (enemy.GetComponent<SlimeController>().targeted == true && engaging) {
+                if (targetedEnemyController.targeted == true && engaging) {
+                    int i = playerStats.currentLevel;
+                    float playerDamageAfterMultipliers = playerStats.attack;
+                    // Add power to damage
+                    playerDamageAfterMultipliers += playerStats.power;
+                    // Check if player is higher level than enemy
+                    if (playerStats.currentLevel > targetedEnemyStats.enemyLevel) {
+                        while (i > targetedEnemyStats.enemyLevel) {
+                            // Multiply damage by 150%
+                            playerDamageAfterMultipliers *= 1.5f;
+                            i--;
+                        }
+                    } else if (playerStats.currentLevel < targetedEnemyStats.enemyLevel) {
+                        while (i < targetedEnemyStats.enemyLevel) {
+                            // Reduce damage by 50%
+                            playerDamageAfterMultipliers *= 0.5f;
+                            i++;
+                        }
+                    }
+                    // Equation for the damage reduction per defense
+                    float damageReductionPercentage = 100f - Mathf.Pow(10f, 2 - 0.0030103f * targetedEnemyController.defense);
+                    playerDamageAfterMultipliers -= playerDamageAfterMultipliers * (damageReductionPercentage / 100);
                     // Deal damage
-                    enemy.GetComponent<EnemyStatsManager>().SetEnemyHealth(-playerDamage, true);
+                    targetedEnemyStats.SetEnemyHealth(-Mathf.RoundToInt(playerDamageAfterMultipliers), true);
                     // Make the enemy hostile
-                    enemy.GetComponent<SlimeController>().resetHostile = true;
+                    targetedEnemyController.resetHostile = true;
                 }
                 // Set the cooldown to true
                 attackCooldown = true;

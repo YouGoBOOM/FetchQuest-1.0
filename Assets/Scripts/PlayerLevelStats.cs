@@ -10,17 +10,28 @@ public class PlayerLevelStats : MonoBehaviour {
     public int experience;                  // Current amount of experience
     public int[] requiredEXP;               // Experience required to level up
     public GameObject EXPChangeNumbers;     // Getting the damage numbers
-    public string[] attributeNames;         // Names of attributes for the player
+    public int power;                       // Getting the value for the attribute of power
+    public int resiliance;                  // Getting the value for the attribute of resiliance
+    public int endurance;                   // Getting the value for the attribute of endurance
+    public int dexterity;                   // Getting the value for the attribute of dexterity
+    public int intellect;                   // Getting the value for the attribute of intellect
+    public int luck;                        // Getting the value for the attribute of luck
+    public string[] attributeNames;         // Setting attribute names for the player
     public int[] attributes;                // Setting attributes for the player
+    public int attack;                      // Getting total player attack
+    public int defense;                     // Getting total player defense
+    public PlayerController playerController;
 
     // Use this for initialization
     void Start () {
         experience = 0;
         for (int i = 0; i < attributes.Length; i++) {
             // Hard set each attribute to 0 at the beginning of the game
-            attributes[i] = 0;
+            attributes[i] = currentLevel;
         }
         maxLevel = requiredEXP.Length - 1;
+        // Getting the player controller
+        playerController = gameObject.GetComponent<PlayerController>();
 	}
 	
 	// Update is called once per frame
@@ -39,6 +50,9 @@ public class PlayerLevelStats : MonoBehaviour {
         if (Input.GetKeyDown("g")) {
             UnfairStupidExperienceFarming();
         }
+
+        attack = playerController.weaponDamage;
+        defense = playerController.armourDefense;
 	}
 
     // Set experience relative to current experience or hard set to value

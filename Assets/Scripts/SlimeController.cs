@@ -8,25 +8,25 @@ public class SlimeController : MonoBehaviour {
     public GameObject thePlayer;                        // Gets the player
     public GameObject theMouse;                         // Gets the cursor
     public bool targeted = false;                       // Check if the enemy is targeted
-    public int attackValue;                             // Enemy attack value
     public GameObject crosshairs;                       // Getting the crosshairs
-    public float moveSpeed;                             // Slime speed
-    private CircleCollider2D slimeCollider;             // Collider for the slime
+    public float moveSpeed;                             // Enemy speed
+    private CircleCollider2D enemyCollider;             // Collider for the enemy
     private PolygonCollider2D solidCollider;            // Collider for solid layer
-    private bool moving = false;                        // Check if slime is moving
+    private bool moving = false;                        // Check if enemy is moving
     public float timeBetweenMove;                       // Time in between random movements
     public float timeBetweenMoveCounter;                // Counts down the time in between random movements
     public float timeToMove;                            // Time taken to move
     public float timeToMoveCounter;                     // Counts down the time taken to move
     private Vector3 direction;                          // Direction of movement
     public float deathTimer;                            // Time taken to respawn
-    public float attackTimer;                           // Attack timer of slime
+    public float attackTimer;                           // Attack timer of enemy
     public float attackTimerCounter;                    // Counter for the attack timer
-    public bool attacking = false;                      // Check if the slime is attacking
+    public bool attacking = false;                      // Check if the enemy is attacking
     public bool attackCooldown = false;                 // Sets the attack cooldown
-    public int attackDamage;                            // Amount of damage slime does per hit
-    public float attackRange;                           // Attack range of slime
-    public bool engaging = false;                       // Check if the slime is engaging the player
+    public int attackDamage;                            // Amount of damage enemy does per hit
+    public int defense;                                 // Amount of defense the enemy has
+    public float attackRange;                           // Attack range of enemy
+    public bool engaging = false;                       // Check if the enemy is engaging the player
     public bool resetHostile = false;                   // Resets hostile state
     public bool hardResetHostile = false;               // Check if first reset in a while
     public float hostileTimer;                          // Time to cool down hostile state
@@ -35,7 +35,7 @@ public class SlimeController : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        slimeCollider = GetComponent<CircleCollider2D>();            // Getting slime Circle Collider 2D
+        enemyCollider = GetComponent<CircleCollider2D>();            // Getting enemy Circle Collider 2D
         // Getting solid layers collider
         solidCollider = GameObject.FindGameObjectWithTag("Solid").GetComponent<PolygonCollider2D>();
         timeBetweenMoveCounter = Random.Range(timeBetweenMove * 0.75f, timeBetweenMove * 1.25f);
@@ -51,10 +51,10 @@ public class SlimeController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         CheckHostile();
-        // Checks if the slime is not attacking
+        // Checks if the enemy is not attacking
         if (!engaging) {
             Moving();
-        // Check if the slime is attacking
+        // Check if the enemy is attacking
         } else {
             AttackPlayer();
         }
@@ -69,16 +69,16 @@ public class SlimeController : MonoBehaviour {
         thePlayer.GetComponent<PlayerController>().enemyDied = true;
     }
 
-    // Function that allows slime to move
+    // Function that allows enemy to move
     private void Moving() {
-        // Checks if slime is moving
+        // Checks if enemy is moving
         if (moving) {
             // Begin countdown
             timeToMoveCounter -= Time.deltaTime;
                 // TODO: FIX ALONG WITH PLAYER COLLISION WITH SOLID
-                // Check if slime is colliding with solid layer
-                if (!(slimeCollider.IsTouching(solidCollider))) {
-                    // Slime is moving
+                // Check if enemy is colliding with solid layer
+                if (!(enemyCollider.IsTouching(solidCollider))) {
+                    // enemy is moving
                     transform.position = Vector3.MoveTowards(transform.position, direction, moveSpeed * Time.deltaTime);
                 }
                 // Check if countdown at 0
@@ -118,6 +118,8 @@ public class SlimeController : MonoBehaviour {
     // Auto-attack the player
     // TODO: SET THIS TO AUTO ATTACK FUNCTION
     public void AttackPlayer() {
+        PlayerLevelStats playerStats = thePlayer.GetComponent<PlayerLevelStats>();
+        EnemyStatsManager enemyStats = gameObject.GetComponent<EnemyStatsManager>();
         if (distanceFromPlayer <= attackRange) {
             // Check if one of the 2 halves is over
             if (attackTimerCounter <= 0) {
@@ -125,8 +127,27 @@ public class SlimeController : MonoBehaviour {
                 attackTimerCounter = attackTimer;
                 // If attack is not on cooldown after one half
                 if (!attackCooldown) {
+                    int i = enemyStats.enemyLevel;
+                    float enemyDamageAfterMultipliers = attackDamage;
+                    // Check if player is higher level than enemy
+                    if (enemyStats.enemyLevel > playerStats.currentLevel) {
+                        while (i > playerStats.currentLevel) {
+                            // Multiply damage by 150%
+                            enemyDamageAfterMultipliers *= 1.5f;
+                            i--;
+                        }
+                    } else if (enemyStats.enemyLevel < playerStats.currentLevel) {
+                        while (i < playerStats.currentLevel) {
+                            // Reduce damage by 50%
+                            enemyDamageAfterMultipliers *= 0.5f;
+                            i++;
+                        }
+                    }
+                    // Equation for the damage reduction per defense
+                    float damageReductionPercentage = 100f - Mathf.Pow(10f, 2 - 0.0030103f * playerStats.defense);
+                    enemyDamageAfterMultipliers -= enemyDamageAfterMultipliers * (damageReductionPercentage / 100);
                     // Deal damage
-                    thePlayer.GetComponent<PlayerHealthManager>().SetCurrentHeatlh(-attackDamage, true);
+                    thePlayer.GetComponent<PlayerHealthManager>().SetCurrentHeatlh(-Mathf.RoundToInt(enemyDamageAfterMultipliers), true);
                     // Set the cooldown to true
                     attackCooldown = true;
                 } else {
@@ -137,14 +158,14 @@ public class SlimeController : MonoBehaviour {
             // Countdown time
             attackTimerCounter -= Time.deltaTime;
         } else {
-            if (!(slimeCollider.IsTouching(solidCollider))) {
-                // Slime is moving
+            if (!(enemyCollider.IsTouching(solidCollider))) {
+                // enemy is moving
                 transform.position = Vector3.MoveTowards(transform.position, thePlayer.transform.position, moveSpeed * Time.deltaTime);
             }
         }
     }
 
-    // Check if the slime is still hostile with the player
+    // Check if the enemy is still hostile with the player
     public void CheckHostile() {
         // Check if the hostile state timer is refreshed
         if (resetHostile) {

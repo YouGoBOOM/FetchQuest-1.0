@@ -78,7 +78,7 @@ public class EnemyStatsManager : MonoBehaviour {
             if (healthRegenTimerCounter > 0) {
                 healthRegenTimerCounter -= Time.deltaTime;
             } else {
-                int healthRegenInstance = healthRegenInstanceAmount(healthRegenPercentage, maxHealthBasedRegen);
+                int healthRegenInstance = HealthRegenInstanceAmount(healthRegenPercentage, maxHealthBasedRegen);
                 SetEnemyHealth(healthRegenInstance, true);
                 healthRegenTimerCounter = healthRegenTimer;
             }
@@ -88,7 +88,7 @@ public class EnemyStatsManager : MonoBehaviour {
     }
 
     // Calculate the amount of health regenerated each tick based on max or missing health
-    private int healthRegenInstanceAmount(float percentage, bool relativeToMaxHealth) {
+    private int HealthRegenInstanceAmount(float percentage, bool relativeToMaxHealth) {
         if (relativeToMaxHealth) {
             return Mathf.Max(Mathf.RoundToInt((maxHealthPoints) * percentage), 1);
         } else {
@@ -101,7 +101,7 @@ public class EnemyStatsManager : MonoBehaviour {
         float EXPGainWithModifier = EXPGainWithoutModifier;
         int i = playerLevelStats.currentLevel;
         // Increase experience gained by 50% per level if player lower level than enemy
-        if (playerLevelStats.currentLevel <= enemyLevel) {
+        if (playerLevelStats.currentLevel < enemyLevel) {
             while (i < enemyLevel) {
                 EXPGainWithModifier *= 1.5f;
                 i++;
