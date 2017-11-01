@@ -19,7 +19,7 @@ public class PlayerController : MonoBehaviour {
     public float attackTimer;                // Attack timer of player
     public float attackTimerCounter;         // Counter for the attack timer
     public bool attackCooldown = false;      // Sets the attack cooldown
-    public static bool playerExists = false; // Determines if the player already exists
+    public static bool playerExists = false; // Check if the player already exists
     private MouseController theCursor;       // Getting the mouse
     public float distanceFromEnemy;          // Distance from target enemy
     public float attackRange;                // Distance from target enemy
@@ -108,13 +108,7 @@ public class PlayerController : MonoBehaviour {
             angle -= 2 * Mathf.PI;
         }
         angle /= (Mathf.PI / 4);
-        // Mathf.Round rounds 0.5 to the even number
-        // 10.5 --> 10
-        // Created own rounding function
-        if (angle % 1f >= 0.5f) {
-            angle += 0.5f;
-        }
-        direction = Mathf.Floor(angle);
+        direction = Mathf.RoundToInt(angle);
         if (direction == 8f) {
             return 0f;
         } else {
@@ -162,7 +156,7 @@ public class PlayerController : MonoBehaviour {
                 // Check what player is targeting
                 if (enemy.GetComponent<SlimeController>().targeted == true && engaging) {
                     // Deal damage
-                    enemy.GetComponent<EnemyHealthChange>().SetEnemyHealth(-playerDamage, true);
+                    enemy.GetComponent<EnemyStatsManager>().SetEnemyHealth(-playerDamage, true);
                     // Make the enemy hostile
                     enemy.GetComponent<SlimeController>().resetHostile = true;
                 }

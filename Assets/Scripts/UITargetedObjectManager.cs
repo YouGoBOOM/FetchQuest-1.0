@@ -7,9 +7,10 @@ public class UITargetedObjectManager : MonoBehaviour {
 
     public Slider healthBar;                            // Getting the health bar in the HUD
     public Text healthPoints;                           // Getting the text in the HUD
-    public Text enemyName;                              // Getting name of enemy
+    public Text enemyName;                              // Getting the name of enemy
+    public Text enemyLevel;                             // Getting the level of enemy
     public MouseController theCursor;                   // Getting the cursor
-    public EnemyHealthChange enemyHealthManager;        // Getting the targeted object health manager
+    public EnemyStatsManager enemyStatsManager;         // Getting the targeted object health manager
     public static bool UIExists;                        // Check if UI already exists
 
     // Use this for initialization
@@ -28,10 +29,11 @@ public class UITargetedObjectManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        enemyHealthManager = theCursor.shownEnemy.GetComponent<EnemyHealthChange>();
-        healthBar.maxValue = enemyHealthManager.maxHealthPoints;
-        healthBar.value = enemyHealthManager.currentHealthPoints;
-        healthPoints.text = "" + enemyHealthManager.currentHealthPoints + "/" + enemyHealthManager.maxHealthPoints;
-        enemyName.text = "" + enemyHealthManager.enemyName;
+        enemyStatsManager = theCursor.shownEnemy.GetComponent<EnemyStatsManager>();
+        healthBar.maxValue = enemyStatsManager.maxHealthPoints;
+        healthBar.value = enemyStatsManager.currentHealthPoints;
+        healthPoints.text = "" + enemyStatsManager.currentHealthPoints + "/" + enemyStatsManager.maxHealthPoints;
+        enemyName.text = "" + enemyStatsManager.enemyName;
+        enemyLevel.text = "" + enemyStatsManager.enemyLevel;
 	}
 }

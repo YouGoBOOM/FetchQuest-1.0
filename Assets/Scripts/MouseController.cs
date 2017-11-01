@@ -89,6 +89,7 @@ public class MouseController : MonoBehaviour {
                     targetingEnemy = true;
                     targetedObject.GetComponent<SlimeController>().targeted = true;
                     targetedShownEnemy = targetedObject;
+                    exitingAfterMovement = false;
                 } else if (targetingObject.tag == "Exit") {
                     // MouseWorldSpace becomes exit location
                     exitingAfterMovement = true;
@@ -103,6 +104,7 @@ public class MouseController : MonoBehaviour {
                 thePlayer.engaging = false;
                 thePlayer.attacking = false;
                 targetedShownEnemy = null;
+                exitingAfterMovement = false;
             }
             // Otherwise, mouseWorldSpace becomes location clicked on
             thePlayer.mouseWorldSpace = MouseScreenPositioning(thePlayer.mouseWorldSpace);

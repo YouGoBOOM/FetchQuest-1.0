@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class PlayerHealthManager : MonoBehaviour {
 
-    public int playerMaxHeatlh;                       // Player's maximum health
-    public int playerCurrentHealth;                   // Player's current health
+    public int playerMaxHeatlh;                         // Player's maximum health
+    public int playerCurrentHealth;                     // Player's current health
     public bool overheal = false;                       // Activate the grace period on the overheal
     public float overhealDegradeGraceTimer;             // Amount of time before health begins to degrade
     public float overhealDegradeGraceTimerCounter;      // Counter for overheal degrade grace timer

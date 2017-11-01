@@ -10,7 +10,7 @@ public class PlayerLevelStats : MonoBehaviour {
     public int experience;                  // Current amount of experience
     public int[] requiredEXP;               // Experience required to level up
     public GameObject EXPChangeNumbers;     // Getting the damage numbers
-    public string[] attributeNammes;        // Names of attributes for the player
+    public string[] attributeNames;         // Names of attributes for the player
     public int[] attributes;                // Setting attributes for the player
 
     // Use this for initialization

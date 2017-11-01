@@ -61,7 +61,7 @@ public class SlimeController : MonoBehaviour {
     }
 
     // When destroyed, untarget itself
-    void OnDestroy () {
+    void OnDestroy () { 
         thePlayer.GetComponent<PlayerController>().engaging = false;
         targeted = false;
         theMouse.GetComponent<MouseController>().targetedObject = null;
