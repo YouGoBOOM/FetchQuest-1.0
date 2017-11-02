@@ -21,7 +21,11 @@ public class FloatingNumbers : MonoBehaviour {
         if (checkEXP) {
             displayNumber.text = "" + valueChange + " EXP";
         } else {
-            displayNumber.text = "" + valueChange;
+            if (valueChange != 0) {
+                displayNumber.text = "" + valueChange;
+            } else {
+                displayNumber.text = "Miss";
+            }
         }
         // Set original color to current color
         originalColor = displayNumber.color;

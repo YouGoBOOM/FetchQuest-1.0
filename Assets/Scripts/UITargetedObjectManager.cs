@@ -31,8 +31,15 @@ public class UITargetedObjectManager : MonoBehaviour {
 	void Update () {
         enemyStatsManager = theCursor.shownEnemy.GetComponent<EnemyStatsManager>();
         healthBar.maxValue = enemyStatsManager.maxHealthPoints;
-        healthBar.value = enemyStatsManager.currentHealthPoints;
-        healthPoints.text = "" + enemyStatsManager.currentHealthPoints + "/" + enemyStatsManager.maxHealthPoints;
+        // If overkilled, show current health as 0
+        if (enemyStatsManager.currentHealthPoints <= 0) {
+            healthBar.value = 0;
+            healthPoints.text = "0/" + enemyStatsManager.maxHealthPoints;
+        // Otherwise show current health
+        } else {
+            healthBar.value = enemyStatsManager.currentHealthPoints;
+            healthPoints.text = "" + enemyStatsManager.currentHealthPoints + "/" + enemyStatsManager.maxHealthPoints;
+        }
         enemyName.text = "" + enemyStatsManager.enemyName;
         enemyLevel.text = "" + enemyStatsManager.enemyLevel;
 	}

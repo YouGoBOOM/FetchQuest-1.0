@@ -25,6 +25,11 @@ public class SlimeController : MonoBehaviour {
     public bool attackCooldown = false;                 // Sets the attack cooldown
     public int attackDamage;                            // Amount of damage enemy does per hit
     public int defense;                                 // Amount of defense the enemy has
+    public int critChance;                              // Amount of critical hit chance
+    public float critMultiplier;                        // Amount of critical hit
+    public int reduceDamageChance;                      // Amount of damage reduction chance
+    public float reduceDamageMultiplier;                // Amount of damage reduction
+    public int missChance;                              // Amount of miss chance
     public float attackRange;                           // Attack range of enemy
     public bool engaging = false;                       // Check if the enemy is engaging the player
     public bool resetHostile = false;                   // Resets hostile state
@@ -146,6 +151,12 @@ public class SlimeController : MonoBehaviour {
                     // Equation for the damage reduction per defense
                     float damageReductionPercentage = 100f - Mathf.Pow(10f, 2 - 0.0030103f * playerStats.defense);
                     enemyDamageAfterMultipliers -= enemyDamageAfterMultipliers * (damageReductionPercentage / 100);
+                    // Crit chance
+                    enemyDamageAfterMultipliers = CheckChance(enemyDamageAfterMultipliers, critChance, critMultiplier);
+                    // Reduce damage chance
+                    enemyDamageAfterMultipliers = CheckChance(enemyDamageAfterMultipliers, playerStats.reduceDamageChance, -playerStats.reduceDamageMultiplier);
+                    // Miss chance
+                    enemyDamageAfterMultipliers = CheckChance(enemyDamageAfterMultipliers, playerStats.missChance, -100);
                     // Deal damage
                     thePlayer.GetComponent<PlayerHealthManager>().SetCurrentHeatlh(-Mathf.RoundToInt(enemyDamageAfterMultipliers), true);
                     // Set the cooldown to true
@@ -192,5 +203,14 @@ public class SlimeController : MonoBehaviour {
             // Find distance from player
             distanceFromPlayer = (transform.position - thePlayer.transform.position).magnitude;
         }
+    }
+
+    // Check if chance is less than roll
+    private float CheckChance(float value, int chance, float multiplier) {
+        float randomRoll = Random.Range(0, 101);
+        if (randomRoll <= chance) {
+            value += value * (multiplier / 100);
+        }
+        return value;
     }
 }

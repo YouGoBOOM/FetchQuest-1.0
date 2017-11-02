@@ -5,32 +5,37 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour {
 
     // Declaring Variables
-    public float moveSpeed;                  // Walking Movement Speed
-    public bool rightMouseClicked = false;   // Check if right mouse was clicked
-    public Vector3 mouseWorldSpace;          // Make target for right click global
-    private Animator animator;               // Animator
-    private Collider2D playerCollider;       // Collider for player
-    public PolygonCollider2D solidCollider;  // Collider for solid layer
-    public bool playerMoving = false;        // Check if player is moving
-    public float direction;                  // Current direction
-    public float lastDirection;              // Last direction when idle
-    public Vector3 lastLocation;             // Last location
-    public bool attacking = false;           // Check if player is attacking
-    public float attackTimer;                // Attack timer of player
-    public float attackTimerCounter;         // Counter for the attack timer
-    public bool attackCooldown = false;      // Sets the attack cooldown
-    public static bool playerExists = false; // Check if the player already exists
-    private MouseController theCursor;       // Getting the mouse
-    private PlayerLevelStats playerStats;    // Getting the player stats
-    public float distanceFromEnemy;          // Distance from target enemy
-    public float attackRange;                // Distance from target enemy
-    public int weaponDamage;                 // Amount of damage the weapon deals
-    public int armourDefense;                // Amount of defense from the armour
-    public bool engaging = false;            // Check if player is engaging
-    public bool enemyDied = false;           // Check if the enemy died
-    public bool firstChecker = false;        // Check if this is the first time this is called
-    public GameObject currentExit;           // The current exit the player is going towards
-    public string startPoint;                // The specific start point
+    public float moveSpeed;                     // Walking Movement Speed
+    public bool rightMouseClicked = false;      // Check if right mouse was clicked
+    public Vector3 mouseWorldSpace;             // Make target for right click global
+    private Animator animator;                  // Animator
+    private Collider2D playerCollider;          // Collider for player
+    public PolygonCollider2D solidCollider;     // Collider for solid layer
+    public bool playerMoving = false;           // Check if player is moving
+    public float direction;                     // Current direction
+    public float lastDirection;                 // Last direction when idle
+    public Vector3 lastLocation;                // Last location
+    public bool attacking = false;              // Check if player is attacking
+    public float attackTimer;                   // Attack timer of player
+    public float attackTimerCounter;            // Counter for the attack timer
+    public bool attackCooldown = false;         // Sets the attack cooldown
+    public static bool playerExists = false;    // Check if the player already exists
+    private MouseController theCursor;          // Getting the mouse
+    private PlayerLevelStats playerStats;       // Getting the player stats
+    public float distanceFromEnemy;             // Distance from target enemy
+    public float attackRange;                   // Distance from target enemy
+    public int weaponDamage;                    // Amount of damage the weapon deals
+    public int armourDefense;                   // Amount of defense from the armour
+    public int weaponCritChance;                // Amount of critical hit chance from the weapon
+    public float weaponCritMultiplier;          // Amount of critical hit from the weapon
+    public int armourReduceDamageChance;        // Amount of damage reduction chance
+    public float armourReduceDamageMultiplier;  // Amount of damage reduction
+    public int armourMissChance;                // Amount of miss chance
+    public bool engaging = false;               // Check if player is engaging
+    public bool enemyDied = false;              // Check if the enemy died
+    public bool firstChecker = false;           // Check if this is the first time this is called
+    public GameObject currentExit;              // The current exit the player is going towards
+    public string startPoint;                   // The specific start point
     
     // Use this for initialization
     void Start () {
@@ -47,6 +52,8 @@ public class PlayerController : MonoBehaviour {
         theCursor = FindObjectOfType<MouseController>();    // Getting the mouse
         // Getting the player level stats
         playerStats = gameObject.GetComponent<PlayerLevelStats>();
+        // Getting solid layers collider
+        solidCollider = GameObject.FindGameObjectWithTag("Solid").GetComponent<PolygonCollider2D>();
     }
 	
 	// Update is called once per frame
@@ -183,6 +190,12 @@ public class PlayerController : MonoBehaviour {
                     // Equation for the damage reduction per defense
                     float damageReductionPercentage = 100f - Mathf.Pow(10f, 2 - 0.0030103f * targetedEnemyController.defense);
                     playerDamageAfterMultipliers -= playerDamageAfterMultipliers * (damageReductionPercentage / 100);
+                    // Crit chance
+                    playerDamageAfterMultipliers = CheckChance(playerDamageAfterMultipliers, weaponCritChance, weaponCritMultiplier);
+                    // Reduce damage chance
+                    playerDamageAfterMultipliers = CheckChance(playerDamageAfterMultipliers, targetedEnemyController.reduceDamageChance, -targetedEnemyController.reduceDamageMultiplier);
+                    // Miss chance
+                    playerDamageAfterMultipliers = CheckChance(playerDamageAfterMultipliers, targetedEnemyController.missChance, -100);
                     // Deal damage
                     targetedEnemyStats.SetEnemyHealth(-Mathf.RoundToInt(playerDamageAfterMultipliers), true);
                     // Make the enemy hostile
@@ -222,5 +235,14 @@ public class PlayerController : MonoBehaviour {
                 attackTimerCounter = 0;
             }
         }
+    }
+
+    // Check if chance is less than roll
+    private float CheckChance(float value, int chance, float multiplier) {
+        float randomRoll = Random.Range(0, 101);
+        if (randomRoll <= chance) {
+            value += value * (multiplier / 100);
+        }
+        return value;
     }
 }

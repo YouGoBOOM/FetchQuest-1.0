@@ -31,14 +31,22 @@ public class UIPlayerManager : MonoBehaviour {
 	void Update () {
         // Health values
         healthBar.maxValue = playerHealthManager.playerMaxHeatlh;
-        healthBar.value = playerHealthManager.playerCurrentHealth;
-        healthPoints.text = "" + playerHealthManager.playerCurrentHealth + "/" + playerHealthManager.playerMaxHeatlh;
-        // Experience values
+        // If overkilled, set value to 0
+        if (playerHealthManager.playerCurrentHealth < 0) {
+            healthBar.value = 0;
+            healthPoints.text = "0/" + playerHealthManager.playerMaxHeatlh;
+        // Otherwise, set value to current health
+        } else {
+            healthBar.value = playerHealthManager.playerCurrentHealth;
+            healthPoints.text = "" + playerHealthManager.playerCurrentHealth + "/" + playerHealthManager.playerMaxHeatlh;
+        }
+        // If not at max level
         if (!playerLevelStats.atMaxLevel) {
             experienceBar.maxValue = playerLevelStats.requiredEXP[playerLevelStats.currentLevel];
             experienceBar.value = playerLevelStats.experience;
             experiencePoints.text = "EXP: " + playerLevelStats.experience + " / " + playerLevelStats.requiredEXP[playerLevelStats.currentLevel];
             level.text = "LVL: " + playerLevelStats.currentLevel;
+        // Otherwise, at max level
         } else {
             experienceBar.maxValue = 1;
             experienceBar.value = 1;

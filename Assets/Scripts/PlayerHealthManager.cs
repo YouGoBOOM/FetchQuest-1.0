@@ -54,9 +54,9 @@ public class PlayerHealthManager : MonoBehaviour {
                 overheal = true;
             }
             // Set color based on healing or damage
-            if (healthValue >= 0) {
+            if (healthValue > 0) {
                 healthNumbersClone.GetComponent<FloatingNumbers>().displayNumber.color = Color.green;
-            } else if (healthValue < 0) {
+            } else if (healthValue <= 0) {
                 healthNumbersClone.GetComponent<FloatingNumbers>().displayNumber.color = Color.red;
             }
         } else {

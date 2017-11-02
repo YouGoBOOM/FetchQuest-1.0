@@ -42,9 +42,11 @@ public class EnemyStatsManager : MonoBehaviour {
         if (relative) {
             currentHealthPoints += healthChange;
             // If taking damage, produce damage particle and numbers
-            if (healthChange < 0) {
-                GameObject damageParticlesClone = Instantiate(damageParticles, transform.position, transform.rotation);
-                Destroy(damageParticlesClone, 1.0f);
+            if (healthChange <= 0) {
+                if (healthChange != 0) {
+                    GameObject damageParticlesClone = Instantiate(damageParticles, transform.position, transform.rotation);
+                    Destroy(damageParticlesClone, 1.0f);
+                }
                 GameObject healthNumbersClone = Instantiate(healthChangeNumbers, transform.position, transform.rotation);
                 healthNumbersClone.GetComponent<FloatingNumbers>().valueChange = healthChange;
                 healthNumbersClone.GetComponent<FloatingNumbers>().displayNumber.color = Color.red;
