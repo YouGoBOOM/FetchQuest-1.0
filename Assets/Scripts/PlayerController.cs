@@ -9,12 +9,16 @@ public class PlayerController : MonoBehaviour {
     public bool rightMouseClicked = false;      // Check if right mouse was clicked
     public Vector3 mouseWorldSpace;             // Make target for right click global
     private Animator animator;                  // Animator
+    private Rigidbody2D myRigidbody;            // Rigidbody
     private Collider2D playerCollider;          // Collider for player
     public PolygonCollider2D solidCollider;     // Collider for solid layer
     public bool playerMoving = false;           // Check if player is moving
+    public float deltaX;                        // Getting the change in x direction
+    public float deltaY;                        // Getting the change in y direction
+    public float magnitude;                     // Getting the magnitude of the direction
+    public float angle;                         // Getting the angle of the player
     public float direction;                     // Current direction
     public float lastDirection;                 // Last direction when idle
-    public Vector3 lastLocation;                // Last location
     public bool attacking = false;              // Check if player is attacking
     public float attackTimer;                   // Attack timer of player
     public float attackTimerCounter;            // Counter for the attack timer
@@ -36,7 +40,7 @@ public class PlayerController : MonoBehaviour {
     public bool firstChecker = false;           // Check if this is the first time this is called
     public GameObject currentExit;              // The current exit the player is going towards
     public string startPoint;                   // The specific start point
-    
+
     // Use this for initialization
     void Start () {
         // Check between levels if player exists
@@ -48,6 +52,7 @@ public class PlayerController : MonoBehaviour {
         }
         
         animator = GetComponent<Animator>();                // Getting Animator
+        myRigidbody = GetComponent<Rigidbody2D>();          // Getting Rigidbody
         playerCollider = GetComponent<Collider2D>();        // Getting player Collider 2D
         theCursor = FindObjectOfType<MouseController>();    // Getting the mouse
         // Getting the player level stats
@@ -67,25 +72,20 @@ public class PlayerController : MonoBehaviour {
             if (distanceFromEnemy > attackRange) {
                 // If player targeted enemy, walk towards enemy until at attack range
                 mouseWorldSpace = theCursor.targetedObject.transform.position;
+                rightMouseClicked = true;
                 playerMoving = true;
                 engaging = false;
             } else {
                 // Attack enemy when within range
-                lastDirection = direction;
-                playerMoving = false;
+                StopMoving();
                 AttackEnemy(theCursor.targetedObject);
                 mouseWorldSpace = transform.position;
-                direction = CalculateDirection(theCursor.targetedObject.transform.position.x, theCursor.targetedObject.transform.position.y, transform.position.x, transform.position.y);
+                direction = CalculateDirection(theCursor.targetedObject.transform.position.x - transform.position.x, theCursor.targetedObject.transform.position.y - transform.position.y);
             }
         }
         // When the targeted enemy dies, reset attack animation
         ResetAttackAnimationOnEnemyDeath();
-        if (transform.position == mouseWorldSpace || playerCollider.IsTouching(solidCollider)) {
-            // Stop moving if at target or touching solid
-            if (!engaging) {
-                StopMoving();
-            }
-        } else if (rightMouseClicked == true && transform.position != mouseWorldSpace) {
+        if (rightMouseClicked == true) {
             // Move until at target
             MovingToTarget(mouseWorldSpace);
         }
@@ -100,14 +100,10 @@ public class PlayerController : MonoBehaviour {
     // Calculates direction of movement
     // Returns direction as float
     // 0 = right, 1 = up-right, 2 = up, 3 = up-left, 4 = left, 5 = down-left, 6 = down, 7 = down-right
-    private float CalculateDirection(float targetLocationX, float targetLocationY, float currentLocationX, float currentLocationY) {
-        float angle;
-        float direction;
-        float deltaX = targetLocationX - currentLocationX;
-        float deltaY = targetLocationY - currentLocationY;
-        if (targetLocationX > currentLocationX) {
+    private float CalculateDirection(float deltaX, float deltaY) {
+        if (deltaX > 0) {
             angle = 2 * Mathf.PI + Mathf.Atan2(deltaY, deltaX);
-        } else if (targetLocationX < currentLocationX) {
+        } else if (deltaX < 0) {
             angle = 2 * Mathf.PI + Mathf.Atan2(deltaY, deltaX);
         } else {
             if (deltaY > 0f) {
@@ -120,18 +116,31 @@ public class PlayerController : MonoBehaviour {
             angle -= 2 * Mathf.PI;
         }
         angle /= (Mathf.PI / 4);
-        direction = Mathf.RoundToInt(angle);
-        if (direction == 8f) {
+        angle = Mathf.RoundToInt(angle);
+        if (angle == 8f) {
             return 0f;
         } else {
-            return direction;
+            return angle;
         }
     }
 
     // Move player to target
     private void MovingToTarget(Vector3 target) {
-        direction = CalculateDirection(target.x, target.y, transform.position.x, transform.position.y);
-        transform.position = Vector3.MoveTowards(transform.position, target, moveSpeed * Time.deltaTime);
+        deltaX = target.x - transform.position.x;                   // Find delta x
+        deltaY = target.y - transform.position.y;                   // Find delta y
+        magnitude = (target - transform.position).magnitude;        // Find the magnitude
+        // Check if not engaging
+        if (!engaging) {
+            // If distance longer than one frame worth of movement
+            if (magnitude > moveSpeed * Time.deltaTime) {
+                // Move towards it
+                myRigidbody.velocity = new Vector2((deltaX / magnitude) * moveSpeed, (deltaY / magnitude) * moveSpeed);
+            } else {
+                StopMoving();
+            }
+            direction = CalculateDirection(deltaX, deltaY);             // Find the direction
+        }
+        
     }
 
     // Stop moving
@@ -139,10 +148,7 @@ public class PlayerController : MonoBehaviour {
         lastDirection = direction;
         rightMouseClicked = false;
         playerMoving = false;
-        // Collision check
-        if (playerCollider.IsTouching(solidCollider)) {
-            transform.position = Vector3.MoveTowards(transform.position, lastLocation, moveSpeed * Time.deltaTime);
-        }
+        myRigidbody.velocity = Vector2.zero;
         if (theCursor.exitingAfterMovement) {
             theCursor.exitingAfterMovement = false;
             currentExit.GetComponent<Exit>().MoveToLevel();

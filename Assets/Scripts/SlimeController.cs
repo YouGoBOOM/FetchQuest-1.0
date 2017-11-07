@@ -10,6 +10,7 @@ public class SlimeController : MonoBehaviour {
     public bool targeted = false;                       // Check if the enemy is targeted
     public GameObject crosshairs;                       // Getting the crosshairs
     public float moveSpeed;                             // Enemy speed
+    private Rigidbody2D enemyRigidbody;                 // Rigidbody for the enemy
     private CircleCollider2D enemyCollider;             // Collider for the enemy
     private PolygonCollider2D solidCollider;            // Collider for solid layer
     private bool moving = false;                        // Check if enemy is moving
@@ -41,6 +42,7 @@ public class SlimeController : MonoBehaviour {
     // Use this for initialization
     void Start () {
         enemyCollider = GetComponent<CircleCollider2D>();            // Getting enemy Circle Collider 2D
+        enemyRigidbody = GetComponent<Rigidbody2D>();                // Getting enemy Rigidbody
         // Getting solid layers collider
         solidCollider = GameObject.FindGameObjectWithTag("Solid").GetComponent<PolygonCollider2D>();
         timeBetweenMoveCounter = Random.Range(timeBetweenMove * 0.75f, timeBetweenMove * 1.25f);
@@ -80,32 +82,31 @@ public class SlimeController : MonoBehaviour {
         if (moving) {
             // Begin countdown
             timeToMoveCounter -= Time.deltaTime;
-                // TODO: FIX ALONG WITH PLAYER COLLISION WITH SOLID
-                // Check if enemy is colliding with solid layer
-                if (!(enemyCollider.IsTouching(solidCollider))) {
-                    // enemy is moving
-                    transform.position = Vector3.MoveTowards(transform.position, direction, moveSpeed * Time.deltaTime);
-                }
-                // Check if countdown at 0
-                if (timeToMoveCounter < 0f) {
-                    // Stop moving
-                    moving = false;
-                    // Set countdown
-                    timeBetweenMoveCounter = Random.Range(timeBetweenMove * 0.75f, timeBetweenMove * 1.25f);
-                }
-            } else {
-                // Begin countdown
-                timeBetweenMoveCounter -= Time.deltaTime;
-                // Check if countdown at 0
-                if (timeBetweenMoveCounter < 0f) {
-                    // Start moving
-                    moving = true;
-                    // Set countdown
-                    timeToMoveCounter = Random.Range(timeToMove * 0.75f, timeToMove * 1.25f);
-                    // Pick new random location to move
-                    direction = new Vector3(Random.Range(-1f, 1f) * moveSpeed + transform.position.x, Random.Range(-1f, 1f) * moveSpeed + transform.position.y, transform.position.z);
-                }
+            // Move
+            enemyRigidbody.velocity = direction;
+            // Check if countdown at 0
+            if (timeToMoveCounter < 0f) {
+                // Stop moving
+                moving = false;
+                // Set countdown
+                timeBetweenMoveCounter = Random.Range(timeBetweenMove * 0.75f, timeBetweenMove * 1.25f);
             }
+        } else {
+            // Don't move
+            enemyRigidbody.velocity = Vector2.zero;
+            // Begin countdown
+            timeBetweenMoveCounter -= Time.deltaTime;
+            // Check if countdown at 0
+            if (timeBetweenMoveCounter < 0f) {
+                // Start moving
+                moving = true;
+                // Set countdown
+                timeToMoveCounter = Random.Range(timeToMove * 0.75f, timeToMove * 1.25f);
+                // Pick new random location to move
+                //direction = new Vector3(Random.Range(-1f, 1f) * moveSpeed + transform.position.x, Random.Range(-1f, 1f) * moveSpeed + transform.position.y, transform.position.z);
+                direction = new Vector2(Random.Range(-1f, 1f) * moveSpeed, Random.Range(-1f, 1f) * moveSpeed);
+            }
+        }
         
         // Check if the player died
         // TODO: Need this code snippet for later maybe
@@ -126,6 +127,8 @@ public class SlimeController : MonoBehaviour {
         PlayerLevelStats playerStats = thePlayer.GetComponent<PlayerLevelStats>();
         EnemyStatsManager enemyStats = gameObject.GetComponent<EnemyStatsManager>();
         if (distanceFromPlayer <= attackRange) {
+            // Don't move if in attack range
+            enemyRigidbody.velocity = Vector2.zero;
             // Check if one of the 2 halves is over
             if (attackTimerCounter <= 0) {
                 // Set the counter back to the max
@@ -169,10 +172,9 @@ public class SlimeController : MonoBehaviour {
             // Countdown time
             attackTimerCounter -= Time.deltaTime;
         } else {
-            if (!(enemyCollider.IsTouching(solidCollider))) {
-                // enemy is moving
-                transform.position = Vector3.MoveTowards(transform.position, thePlayer.transform.position, moveSpeed * Time.deltaTime);
-            }
+            // Enemy is moving
+            //transform.position = Vector3.MoveTowards(transform.position, thePlayer.transform.position, moveSpeed * Time.deltaTime);
+            enemyRigidbody.velocity = new Vector2((thePlayer.transform.position.x - transform.position.x) / distanceFromPlayer * moveSpeed, (thePlayer.transform.position.y - transform.position.y) / distanceFromPlayer * moveSpeed);
         }
     }
 
@@ -206,7 +208,7 @@ public class SlimeController : MonoBehaviour {
     }
 
     // Check if chance is less than roll
-    private float CheckChance(float value, int chance, float multiplier) {
+    private float CheckChance(float value, int chance, float multiplier)    {
         float randomRoll = Random.Range(0, 101);
         if (randomRoll <= chance) {
             value += value * (multiplier / 100);

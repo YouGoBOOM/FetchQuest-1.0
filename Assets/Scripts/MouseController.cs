@@ -108,7 +108,6 @@ public class MouseController : MonoBehaviour {
             }
             // Otherwise, mouseWorldSpace becomes location clicked on
             thePlayer.mouseWorldSpace = MouseScreenPositioning(thePlayer.mouseWorldSpace);
-            thePlayer.lastLocation = thePlayer.transform.position;
         }
     }
     

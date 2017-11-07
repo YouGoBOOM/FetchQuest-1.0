@@ -15,7 +15,7 @@ public class NPCMovement : MonoBehaviour {
     public bool loopStops;                      // Check if NPC loops through stops array
     public bool reverseStops;                   // Check if NPC reverse through stops array
     public bool isReversing;                    // Check if NPC is reversing through stops array
-    public bool endWalkingSequence;            // Check if NPC walking sequence is ended
+    public bool endWalkingSequence;             // Check if NPC walking sequence is ended
 
 	// Use this for initialization
 	void Start () {
