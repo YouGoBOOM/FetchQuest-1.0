@@ -33,7 +33,7 @@ public class Exit : MonoBehaviour {
             // When mouse hovers over exit, activate exitHover
             exitHover.SetActive(true);
             // targeting object is the exit
-            other.gameObject.GetComponent<MouseController>().targetingObject = transform.gameObject;
+            other.gameObject.GetComponent<MouseController>().targetingObject = gameObject;
         }
     }
 

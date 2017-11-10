@@ -47,10 +47,13 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\CameraController.cs" />
+     <Compile Include="Assets\Scripts\DialogueHolder.cs" />
+     <Compile Include="Assets\Scripts\DialogueManager.cs" />
      <Compile Include="Assets\Scripts\EnemyStatsManager.cs" />
      <Compile Include="Assets\Scripts\Exit.cs" />
      <Compile Include="Assets\Scripts\FloatingNumbers.cs" />
      <Compile Include="Assets\Scripts\MouseController.cs" />
+     <Compile Include="Assets\Scripts\NPCController.cs" />
      <Compile Include="Assets\Scripts\NPCMovement.cs" />
      <Compile Include="Assets\Scripts\PlayerController.cs" />
      <Compile Include="Assets\Scripts\PlayerHealthManager.cs" />

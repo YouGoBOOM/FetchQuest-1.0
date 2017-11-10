@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class NPCMovement : MonoBehaviour {
 
-    public string NPCName;                      // Getting the name of the NPC
     public float NPCMoveSpeed;                  // Getting the move speed of the NPC
     public int currentStop;                     // Find which step the NPC is on
     public Vector3[] stops;                     // Getting an array of steps
@@ -12,15 +11,19 @@ public class NPCMovement : MonoBehaviour {
     public float waitTimeDuringStopsCounter;    // Counter for wait time counter
     public bool isWalking;                      // Check if the NPC is walking
     public PlayerController playerController;   // Getting the player controller
+    public Rigidbody2D NPCRigidbody;            // Getting the NPC rigidbody
     public bool loopStops;                      // Check if NPC loops through stops array
     public bool reverseStops;                   // Check if NPC reverse through stops array
     public bool isReversing;                    // Check if NPC is reversing through stops array
     public bool endWalkingSequence;             // Check if NPC walking sequence is ended
+    public bool pauseWalkingForDialogue;        // Check if NPC paused walking for dialogue
 
 	// Use this for initialization
 	void Start () {
         // Getting the player controller
 		playerController = FindObjectOfType<PlayerController>();
+        // Getting the NPC rigidbody
+        NPCRigidbody = GetComponent<Rigidbody2D>();
         // Setting the wait time counter to the wait time at the current stop
         waitTimeDuringStopsCounter = waitTimeDuringStops[currentStop];
         // Set starting position to current stop
@@ -30,8 +33,13 @@ public class NPCMovement : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         CheckSortingLayerOrder();
-        Moving();
-	}
+        // Check if not paused for dialogue
+        if (!pauseWalkingForDialogue) {
+            Moving();
+        } else {
+            NPCRigidbody.velocity = Vector2.zero;
+        }
+    }
 
     // Check position relative to player
     private void CheckSortingLayerOrder() {
@@ -93,9 +101,9 @@ public class NPCMovement : MonoBehaviour {
                     waitTimeDuringStopsCounter = waitTimeDuringStops[currentStop];
                     // Set NPC walking
                     isWalking = true;
-
                 }
-                // Check if walking
+                NPCRigidbody.velocity = Vector2.zero;
+            // Check if walking
             } else {
                 // Move to stop
                 transform.position = Vector3.MoveTowards(transform.position, stops[currentStop], NPCMoveSpeed * Time.deltaTime);

@@ -11,8 +11,6 @@ public class SlimeController : MonoBehaviour {
     public GameObject crosshairs;                       // Getting the crosshairs
     public float moveSpeed;                             // Enemy speed
     private Rigidbody2D enemyRigidbody;                 // Rigidbody for the enemy
-    private CircleCollider2D enemyCollider;             // Collider for the enemy
-    private PolygonCollider2D solidCollider;            // Collider for solid layer
     private bool moving = false;                        // Check if enemy is moving
     public float timeBetweenMove;                       // Time in between random movements
     public float timeBetweenMoveCounter;                // Counts down the time in between random movements
@@ -38,13 +36,15 @@ public class SlimeController : MonoBehaviour {
     public float hostileTimer;                          // Time to cool down hostile state
     public float hostileTimerCounter;                   // Counter for the hostile timer
     public float distanceFromPlayer;                    // Distance from player
+    public Vector3 spawnPosition;                       // Spawn position
+    public float distanceFromSpawn;                     // Distance from spawn position
+    public float constraintRadius;                      // Get the constraint radius
+    public bool returningToSpawn;                       // Check if enemy is returning to spawn
 
     // Use this for initialization
     void Start () {
-        enemyCollider = GetComponent<CircleCollider2D>();            // Getting enemy Circle Collider 2D
         enemyRigidbody = GetComponent<Rigidbody2D>();                // Getting enemy Rigidbody
         // Getting solid layers collider
-        solidCollider = GameObject.FindGameObjectWithTag("Solid").GetComponent<PolygonCollider2D>();
         timeBetweenMoveCounter = Random.Range(timeBetweenMove * 0.75f, timeBetweenMove * 1.25f);
         timeToMoveCounter = Random.Range(timeToMove * 0.75f, timeToMove * 1.25f);
         crosshairs = transform.GetChild(0).gameObject;               // Crosshairs
@@ -53,10 +53,12 @@ public class SlimeController : MonoBehaviour {
         thePlayer = GameObject.FindGameObjectWithTag("Player");
         // Getting the mouse
         theMouse = FindObjectOfType<MouseController>().gameObject;
+        spawnPosition = transform.position;                          // Get spawn position  
     }
 	
 	// Update is called once per frame
 	void Update () {
+        distanceFromSpawn = (spawnPosition - transform.position).magnitude;
         CheckHostile();
         // Checks if the enemy is not attacking
         if (!engaging) {
@@ -68,20 +70,28 @@ public class SlimeController : MonoBehaviour {
     }
 
     // When destroyed, untarget itself
-    void OnDestroy () { 
-        thePlayer.GetComponent<PlayerController>().engaging = false;
-        targeted = false;
-        theMouse.GetComponent<MouseController>().targetedObject = null;
-        theMouse.GetComponent<MouseController>().targetingEnemy = false;
-        thePlayer.GetComponent<PlayerController>().enemyDied = true;
+    void OnDestroy () {
+        if (thePlayer != null) {
+            thePlayer.GetComponent<PlayerController>().engaging = false;
+            targeted = false;
+            theMouse.GetComponent<MouseController>().targetedObject = null;
+            theMouse.GetComponent<MouseController>().targetingEnemy = false;
+            thePlayer.GetComponent<PlayerController>().enemyDied = true;
+        }
     }
 
     // Function that allows enemy to move
     private void Moving() {
         // Checks if enemy is moving
         if (moving) {
-            // Begin countdown
-            timeToMoveCounter -= Time.deltaTime;
+            // Check if the enemy should return to spawn
+            if (!returningToSpawn) {
+                // Begin countdown
+                timeToMoveCounter -= Time.deltaTime;
+            }
+            if (distanceFromSpawn < constraintRadius || constraintRadius < 0) {
+                returningToSpawn = false;
+            }
             // Move
             enemyRigidbody.velocity = direction;
             // Check if countdown at 0
@@ -102,9 +112,15 @@ public class SlimeController : MonoBehaviour {
                 moving = true;
                 // Set countdown
                 timeToMoveCounter = Random.Range(timeToMove * 0.75f, timeToMove * 1.25f);
-                // Pick new random location to move
-                //direction = new Vector3(Random.Range(-1f, 1f) * moveSpeed + transform.position.x, Random.Range(-1f, 1f) * moveSpeed + transform.position.y, transform.position.z);
-                direction = new Vector2(Random.Range(-1f, 1f) * moveSpeed, Random.Range(-1f, 1f) * moveSpeed);
+                // Check if enemy in constraint radius
+                if (distanceFromSpawn < constraintRadius || constraintRadius < 0) {
+                    // Pick new random location to move
+                    direction = new Vector2(Random.Range(-1f, 1f) * moveSpeed, Random.Range(-1f, 1f) * moveSpeed);
+                } else {
+                    // Head back to constaint radius
+                    direction = new Vector2((spawnPosition.x - transform.position.x) / distanceFromSpawn * moveSpeed, (spawnPosition.y - transform.position.y) / distanceFromSpawn * moveSpeed);
+                    returningToSpawn = true;
+                }
             }
         }
         

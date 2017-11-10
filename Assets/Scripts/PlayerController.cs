@@ -10,7 +10,6 @@ public class PlayerController : MonoBehaviour {
     public Vector3 mouseWorldSpace;             // Make target for right click global
     private Animator animator;                  // Animator
     private Rigidbody2D myRigidbody;            // Rigidbody
-    private Collider2D playerCollider;          // Collider for player
     public PolygonCollider2D solidCollider;     // Collider for solid layer
     public bool playerMoving = false;           // Check if player is moving
     public float deltaX;                        // Getting the change in x direction
@@ -26,7 +25,8 @@ public class PlayerController : MonoBehaviour {
     public static bool playerExists = false;    // Check if the player already exists
     private MouseController theCursor;          // Getting the mouse
     private PlayerLevelStats playerStats;       // Getting the player stats
-    public float distanceFromEnemy;             // Distance from target enemy
+    public float distanceFromObject;            // Distance from target enemy
+    public float interactRange;                 // Distance to interact with object
     public float attackRange;                   // Distance from target enemy
     public int weaponDamage;                    // Amount of damage the weapon deals
     public int armourDefense;                   // Amount of defense from the armour
@@ -53,7 +53,6 @@ public class PlayerController : MonoBehaviour {
         
         animator = GetComponent<Animator>();                // Getting Animator
         myRigidbody = GetComponent<Rigidbody2D>();          // Getting Rigidbody
-        playerCollider = GetComponent<Collider2D>();        // Getting player Collider 2D
         theCursor = FindObjectOfType<MouseController>();    // Getting the mouse
         // Getting the player level stats
         playerStats = gameObject.GetComponent<PlayerLevelStats>();
@@ -66,28 +65,43 @@ public class PlayerController : MonoBehaviour {
         // Right click movement
         theCursor.OnMouseRightClick();
         // Check if an enemy is targeted
-        if (theCursor.targetingEnemy) {
+        if (theCursor.targetingEnemy || theCursor.targetingNPC) {
             // Get the distance from the targeted enemy
-            distanceFromEnemy = (transform.position - theCursor.targetedObject.transform.position).magnitude;
-            if (distanceFromEnemy > attackRange) {
+            distanceFromObject = (transform.position - theCursor.targetedObject.transform.position).magnitude;
+            // Set distance based on object
+            if (theCursor.targetingEnemy) {
+                interactRange = attackRange;
+            } else if (theCursor.targetingNPC) {
+                interactRange = theCursor.targetedObject.GetComponent<DialogueHolder>().readableDistance;
+            }
+            if (distanceFromObject > interactRange) {
                 // If player targeted enemy, walk towards enemy until at attack range
                 mouseWorldSpace = theCursor.targetedObject.transform.position;
                 rightMouseClicked = true;
                 playerMoving = true;
                 engaging = false;
             } else {
-                // Attack enemy when within range
                 StopMoving();
-                AttackEnemy(theCursor.targetedObject);
                 mouseWorldSpace = transform.position;
                 direction = CalculateDirection(theCursor.targetedObject.transform.position.x - transform.position.x, theCursor.targetedObject.transform.position.y - transform.position.y);
+                if (theCursor.targetingEnemy) {
+                    // Attack enemy when within range
+                    AttackEnemy(theCursor.targetedObject);
+                } else if (theCursor.targetingNPC) {
+                    // Interact with dialogue holder when in range
+                    theCursor.targetedObject.GetComponent<DialogueHolder>().OpenDialogue();
+                    theCursor.targetingNPC = false;
+                }
             }
         }
         // When the targeted enemy dies, reset attack animation
         ResetAttackAnimationOnEnemyDeath();
-        if (rightMouseClicked == true) {
+        if (rightMouseClicked) {
             // Move until at target
             MovingToTarget(mouseWorldSpace);
+        } else {
+            // Don't move
+            myRigidbody.velocity = Vector2.zero;
         }
         
         // Set parameters in animator
@@ -100,13 +114,11 @@ public class PlayerController : MonoBehaviour {
     // Calculates direction of movement
     // Returns direction as float
     // 0 = right, 1 = up-right, 2 = up, 3 = up-left, 4 = left, 5 = down-left, 6 = down, 7 = down-right
-    private float CalculateDirection(float deltaX, float deltaY) {
-        if (deltaX > 0) {
-            angle = 2 * Mathf.PI + Mathf.Atan2(deltaY, deltaX);
-        } else if (deltaX < 0) {
-            angle = 2 * Mathf.PI + Mathf.Atan2(deltaY, deltaX);
+    private float CalculateDirection(float dX, float dY) {
+        if (dX != 0) {
+            angle = 2 * Mathf.PI + Mathf.Atan2(dY, dX);
         } else {
-            if (deltaY > 0f) {
+            if (dY > 0f) {
                 angle = Mathf.PI / 2;
             } else {
                 angle = 3 * Mathf.PI / 2;
@@ -136,11 +148,11 @@ public class PlayerController : MonoBehaviour {
                 // Move towards it
                 myRigidbody.velocity = new Vector2((deltaX / magnitude) * moveSpeed, (deltaY / magnitude) * moveSpeed);
             } else {
+                // Stop moving
                 StopMoving();
             }
             direction = CalculateDirection(deltaX, deltaY);             // Find the direction
         }
-        
     }
 
     // Stop moving
