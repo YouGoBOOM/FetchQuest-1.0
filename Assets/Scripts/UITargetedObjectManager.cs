@@ -54,12 +54,15 @@ public class UITargetedObjectManager : MonoBehaviour {
         // Check if the cursor is showing an NPC
         if (theCursor.shownObject.tag == "NPC") {
             NPCController = theCursor.shownObject.GetComponent<NPCController>();
-            healthBar.fillRect.GetComponentInChildren<Image>().color = Color.green;
-            healthBar.maxValue = 1;
-            healthBar.value = 1;
-            healthPoints.text = "Friendly";
-            objectName.text = "" + NPCController.NPCName;
-            objectLevel.text = "" + NPCController.NPCLevel;
+            // Check if not a sign
+            if (!NPCController.isSign) {
+                healthBar.fillRect.GetComponentInChildren<Image>().color = Color.green;
+                healthBar.maxValue = 1;
+                healthBar.value = 1;
+                healthPoints.text = "Friendly";
+                objectName.text = "" + NPCController.NPCName;
+                objectLevel.text = "" + NPCController.NPCLevel;
+            }
         }
     }
 }

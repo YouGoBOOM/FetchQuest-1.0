@@ -6,7 +6,7 @@ public class NPCController : MonoBehaviour {
 
     public string NPCName;                      // Name of NPC
     public int NPCLevel;                        // Level of NPC
-    public bool targeted = false;               // Check to see if targeted
+    public bool isSign;                         // Check if this is a sign
 
 	// Use this for initialization
 	void Start () {

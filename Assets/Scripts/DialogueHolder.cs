@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DialogueHolder : MonoBehaviour {
 
-    public string dialogueText;                     // Dialogue text
+    public string[] dialogueLines;                  // Dialogue lines
     public DialogueManager dialogueManager;         // Getting the dialogue manager
     public float readableDistance;                  // Getting the distance required to dialogue 
     public bool dialogueOpened;                     // Check if the dialogue is opened
@@ -28,7 +28,7 @@ public class DialogueHolder : MonoBehaviour {
         dialogueManager.currentDialogueHolder = this;
         // Open dialogue if not already
         if (!dialogueOpened) {
-            dialogueManager.showBox(dialogueText);
+            dialogueManager.ShowDialogue(dialogueLines);
             dialogueOpened = true;
         }
     }

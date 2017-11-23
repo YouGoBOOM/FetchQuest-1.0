@@ -40,6 +40,7 @@ public class PlayerController : MonoBehaviour {
     public bool firstChecker = false;           // Check if this is the first time this is called
     public GameObject currentExit;              // The current exit the player is going towards
     public string startPoint;                   // The specific start point
+    public DialogueManager dialogueManager;     // Getting the dialogue manager
 
     // Use this for initialization
     void Start () {
@@ -90,7 +91,7 @@ public class PlayerController : MonoBehaviour {
                 } else if (theCursor.targetingNPC) {
                     // Interact with dialogue holder when in range
                     theCursor.targetedObject.GetComponent<DialogueHolder>().OpenDialogue();
-                    theCursor.targetingNPC = false;
+                    theCursor.targetingNPC = true;
                 }
             }
         }
@@ -99,6 +100,10 @@ public class PlayerController : MonoBehaviour {
         if (rightMouseClicked) {
             // Move until at target
             MovingToTarget(mouseWorldSpace);
+            // If in middle of dialogue, move but close dialogue
+            if (dialogueManager.dialogueActive) {
+                dialogueManager.SetDialogueInactive();
+            }
         } else {
             // Don't move
             myRigidbody.velocity = Vector2.zero;

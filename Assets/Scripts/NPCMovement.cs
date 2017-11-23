@@ -24,21 +24,21 @@ public class NPCMovement : MonoBehaviour {
 		playerController = FindObjectOfType<PlayerController>();
         // Getting the NPC rigidbody
         NPCRigidbody = GetComponent<Rigidbody2D>();
-        // Setting the wait time counter to the wait time at the current stop
-        waitTimeDuringStopsCounter = waitTimeDuringStops[currentStop];
-        // Set starting position to current stop
-        transform.position = stops[currentStop];
+        // Chck if there are stops
+        if (stops.Length != 0) {
+            // Setting the wait time counter to the wait time at the current stop
+            waitTimeDuringStopsCounter = waitTimeDuringStops[currentStop];
+            // Set starting position to current stop
+            transform.position = stops[currentStop];
+        }
+        // Set initial velocity to zero
+        NPCRigidbody.velocity = Vector2.zero;
     }
 	
 	// Update is called once per frame
 	void Update () {
         CheckSortingLayerOrder();
-        // Check if not paused for dialogue
-        if (!pauseWalkingForDialogue) {
-            Moving();
-        } else {
-            NPCRigidbody.velocity = Vector2.zero;
-        }
+        Moving();
     }
 
     // Check position relative to player
@@ -56,63 +56,73 @@ public class NPCMovement : MonoBehaviour {
 
     // Move towards the stops
     private void Moving() {
-        if (!endWalkingSequence) {
-            // Check if not walking
-            if (!isWalking) {
-                // Count down counter
-                if (waitTimeDuringStopsCounter > 0) {
-                    waitTimeDuringStopsCounter -= Time.deltaTime;
-                } else {
-                    // Check if stops should reverse
-                    if (reverseStops) {
-                        // Check if going forward through stops
-                        if (!isReversing) {
-                            // Increase current stop
-                            currentStop++;
-                            // If at last stop, reverse 
-                            if (currentStop == stops.Length - 1) {
-                                isReversing = true;
-                            }
-                            // Check if going reverse through stops
+        // Check if there isn't a stop
+        if (stops.Length != 0) {
+            // Check if not paused for dialogue
+            if (!pauseWalkingForDialogue) {
+                // Check if not at the end
+                if (!endWalkingSequence) {
+                    // Check if not walking
+                    if (!isWalking) {
+                        // Count down counter
+                        if (waitTimeDuringStopsCounter > 0) {
+                            waitTimeDuringStopsCounter -= Time.deltaTime;
                         } else {
-                            // Decrease current stop
-                            currentStop--;
-                            // If at first stop, go forward
-                            if (currentStop == 0) {
-                                isReversing = false;
+                            // Check if stops should reverse
+                            if (reverseStops) {
+                                // Check if going forward through stops
+                                if (!isReversing) {
+                                    // Increase current stop
+                                    currentStop++;
+                                    // If at last stop, reverse 
+                                    if (currentStop == stops.Length - 1) {
+                                        isReversing = true;
+                                    }
+                                    // Check if going reverse through stops
+                                } else {
+                                    // Decrease current stop
+                                    currentStop--;
+                                    // If at first stop, go forward
+                                    if (currentStop == 0) {
+                                        isReversing = false;
+                                    }
+                                }
+                                // Check if stops should loop
+                            } else if (loopStops) {
+                                currentStop++;
+                                // Loop back if at end
+                                if (currentStop == stops.Length) {
+                                    currentStop = 0;
+                                }
+                            } else {
+                                // Stop at end
+                                if (currentStop != stops.Length - 1) {
+                                    currentStop++;
+                                } else {
+                                    endWalkingSequence = true;
+                                }
                             }
+                            // Set stop counter to next stop
+                            waitTimeDuringStopsCounter = waitTimeDuringStops[currentStop];
+                            // Set NPC walking
+                            isWalking = true;
                         }
-                        // Check if stops should loop
-                    } else if (loopStops) {
-                        currentStop++;
-                        // Loop back if at end
-                        if (currentStop == stops.Length) {
-                            currentStop = 0;
-                        }
+                        NPCRigidbody.velocity = Vector2.zero;
+                        // Check if walking
                     } else {
-                        // Stop at end
-                        if (currentStop != stops.Length - 1) {
-                            currentStop++;
-                        } else {
-                            endWalkingSequence = true;
+                        // Move to stop
+                        transform.position = Vector3.MoveTowards(transform.position, stops[currentStop], NPCMoveSpeed * Time.deltaTime);
+                        // Check if at stop
+                        if (transform.position == stops[currentStop]) {
+                            // Set NPC not walking
+                            isWalking = false;
                         }
                     }
-                    // Set stop counter to next stop
-                    waitTimeDuringStopsCounter = waitTimeDuringStops[currentStop];
-                    // Set NPC walking
-                    isWalking = true;
-                }
-                NPCRigidbody.velocity = Vector2.zero;
-            // Check if walking
-            } else {
-                // Move to stop
-                transform.position = Vector3.MoveTowards(transform.position, stops[currentStop], NPCMoveSpeed * Time.deltaTime);
-                // Check if at stop
-                if (transform.position == stops[currentStop]) {
-                    // Set NPC not walking
-                    isWalking = false;
                 }
             }
+        // Otherwise don't move
+        } else {
+            NPCRigidbody.velocity = Vector2.zero;
         }
     }
 }

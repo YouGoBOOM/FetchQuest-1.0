@@ -13,6 +13,7 @@ public class MouseController : MonoBehaviour {
     public GameObject oldTargetedObject = null;         // Set old targeted object
     public bool targetingEnemy = false;                 // Check if the player is targeting an enemy
     public bool targetingNPC = false;                   // Check if the player is targeting an NPC
+    public bool targetingSign = false;                  // Check if the player is targeting a sign
     public static bool cursorExists = false;            // Check if mouse exists
     public bool exitingAfterMovement = false;           // Change level after movement
     public GameObject targetedShownObject = null;       // Set shown object clicked on
@@ -20,7 +21,6 @@ public class MouseController : MonoBehaviour {
     public GameObject shownObject = null;               // Set shown object
     public UITargetedObjectManager shownObjectManager;  // Get manager of shown object
     public bool goToObject = false;                     // Check if player should go to object
-    public bool dialogueOpened = false;                 // Check if the dialogue has opened
 
     void Awake () {
         // Sets the default cursor to invisible
@@ -43,7 +43,6 @@ public class MouseController : MonoBehaviour {
 
         myAnimator = GetComponent<Animator>();                    // Getting Animator
         thePlayer = FindObjectOfType<PlayerController>();         // Getting the player
-        // Getting the UI Targeted Object Manager
     }
 	
 	// Update is called once per frame
@@ -58,8 +57,8 @@ public class MouseController : MonoBehaviour {
         }
         // Set shown enemy
         SetShownObject();
-        // Set activeness of object
-        if (shownObject == null) {
+        // Check if shown object is null or a sign
+        if (shownObject == null || targetingSign) {
             shownObjectManager.gameObject.SetActive(false);
         } else {
             shownObjectManager.gameObject.SetActive(true);
@@ -85,10 +84,7 @@ public class MouseController : MonoBehaviour {
                     if (oldTargetedObject.tag == "Enemy") {
                         // Untarget old enemy
                         oldTargetedObject.GetComponent<SlimeController>().targeted = false;
-                    } else if (oldTargetedObject.tag == "NPC") {
-                        // Untarget old NPC
-                        oldTargetedObject.GetComponent<NPCController>().targeted = false;
-                    }
+                    } 
                 }
                 // Check if clicked on an enemy
                 if (targetingObject.tag == "Enemy") {
@@ -98,6 +94,7 @@ public class MouseController : MonoBehaviour {
                     targetedShownObject = targetedObject;
                     exitingAfterMovement = false;
                     targetingNPC = false;
+                    targetingSign = false;
                     // Check if clicked on an exit
                 } else if (targetingObject.tag == "Exit") {
                     // MouseWorldSpace becomes exit location
@@ -107,14 +104,18 @@ public class MouseController : MonoBehaviour {
                     thePlayer.attacking = false;
                     targetedShownObject = null;
                     targetingNPC = false;
-                // Check if clicked on NPC or sign
+                    targetingSign = false;
+                    // Check if clicked on NPC or sign
                 } else if (targetingObject.tag == "NPC") {
                     // MouseWorldSpace becomes npc location
-                    targetedObject.GetComponent<NPCController>().targeted = true;
                     targetedShownObject = targetedObject;
                     thePlayer.attacking = false;
                     exitingAfterMovement = false;
                     targetingNPC = true;
+                    // Check if NPC is a sign
+                    if (targetingObject.GetComponent<NPCController>().isSign) {
+                        targetingSign = true;
+                    }
                 }
             } else {
                 goToObject = false;
@@ -125,6 +126,7 @@ public class MouseController : MonoBehaviour {
                 targetedShownObject = null;
                 exitingAfterMovement = false;
                 targetingNPC = false;
+                targetingSign = false;
             }
             if (goToObject) {
                 // Go to targeting object
@@ -169,9 +171,10 @@ public class MouseController : MonoBehaviour {
         // Target NPC
         if (coll.gameObject.tag == "NPC") {
             targetingObject = coll.gameObject;
-            targetingShownObject = coll.gameObject;
+            if (!coll.gameObject.GetComponent<NPCController>().isSign) {
+                targetingShownObject = coll.gameObject;
+            }
         }
-
     }
 
     private void OnCollisionExit2D(Collision2D coll) {
@@ -185,7 +188,9 @@ public class MouseController : MonoBehaviour {
         // Untarget NPC
         if (coll.gameObject.tag == "NPC") {
             targetingObject = null;
-            targetingShownObject = null;
+            if (!coll.gameObject.GetComponent<NPCController>().isSign) {
+                targetingShownObject = null;
+            }
         }
     }
 }
